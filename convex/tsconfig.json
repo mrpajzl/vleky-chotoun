@@ -1,0 +1,12 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "./*": ["./*"]
+    },
+    "moduleResolution": "Bundler",
+    "skipLibCheck": true
+  },
+  "include": ["./**/*"]
+}
