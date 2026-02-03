@@ -8,4 +8,7 @@
  * @module
  */
 
+export { query, mutation, action, internalQuery, internalMutation, internalAction } from "convex/server";
+export { httpRouter, httpAction } from "convex/server";
+export { cronJobs } from "convex/server";
 export * from "convex/server";
