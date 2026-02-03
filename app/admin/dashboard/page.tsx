@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Camera, CloudSnow, DollarSign, Newspaper, Settings, Lift } from "lucide-react";
+import { Camera, CloudSnow, DollarSign, Newspaper, Settings, Cable } from "lucide-react";
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -26,7 +26,7 @@ export default function AdminDashboard() {
     {
       title: "Stav areálu",
       description: "Aktualizovat provozní dobu a stav vleků",
-      icon: <Lift className="w-12 h-12" />,
+      icon: <Cable className="w-12 h-12" />,
       href: "/admin/status",
       color: "bg-green-500",
     },

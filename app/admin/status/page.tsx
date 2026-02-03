@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { Save, Lift } from "lucide-react";
+import { Save, Cable } from "lucide-react";
 
 export default function AdminStatusPage() {
   const router = useRouter();
@@ -57,7 +57,7 @@ export default function AdminStatusPage() {
       {/* Operating Status */}
       <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
         <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-          <Lift className="w-6 h-6" />
+          <Cable className="w-6 h-6" />
           Provozní stav
         </h2>
         
