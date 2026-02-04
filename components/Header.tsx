@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Mountain, Camera, CloudSnow, CreditCard, Phone, Menu, X } from "lucide-react";
+import { Mountain, Camera, CloudSnow, CreditCard, Phone, Menu, X, Package } from "lucide-react";
 import { useState } from "react";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 export default function Header() {
   const pathname = usePathname();
@@ -13,6 +14,7 @@ export default function Header() {
     { name: "Webkamery", href: "/kamery", icon: Camera },
     { name: "Podmínky", href: "/podminky", icon: CloudSnow },
     { name: "Ceník", href: "/cenik", icon: CreditCard },
+    { name: "Půjčovna", href: "/pujcovna", icon: Package },
     { name: "Kontakt", href: "/kontakt", icon: Phone },
   ];
 
@@ -58,6 +60,7 @@ export default function Header() {
                 </Link>
               );
             })}
+            <LanguageSwitcher />
           </nav>
 
           {/* Mobile Menu Button */}
