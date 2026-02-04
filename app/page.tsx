@@ -31,9 +31,9 @@ export default function HomePage() {
     setImageTimestamps(prev => ({ ...prev, [cameraId]: Date.now() }));
   };
 
-  const isOperating = operatingStatus?.isOperating ?? false;
+  const isOperating = operatingStatus?.isOpen ?? false;
   const operatingLifts = lifts?.filter(lift => lift.isOperating) || [];
-  const topNews = newsItems?.filter(n => n.isVisible).slice(0, 2) || [];
+  const topNews = newsItems?.filter(n => n.isActive).slice(0, 2) || [];
 
   return (
     <div className="min-h-screen">
@@ -139,7 +139,7 @@ export default function HomePage() {
               <h3 className="font-display text-2xl">Provozní doba</h3>
             </div>
             <p className="font-mono text-3xl text-mountain-night mb-2">
-              {operatingStatus?.hours || '9-21'}
+              {operatingStatus?.openingHours || '9-21'}
             </p>
             <p className="text-mountain-night/60">
               {isOperating ? 'Dnes otevřeno' : 'Dnes zavřeno'}
@@ -211,7 +211,7 @@ export default function HomePage() {
                     {item.content}
                   </p>
                   <p className="font-mono text-sm text-mountain-night/50">
-                    {new Date(item.date).toLocaleDateString('cs-CZ')}
+                    {new Date(item.createdAt).toLocaleDateString('cs-CZ')}
                   </p>
                 </div>
               </article>
