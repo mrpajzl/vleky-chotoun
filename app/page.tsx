@@ -8,8 +8,8 @@ import { useState, useEffect } from "react";
 
 export default function HomePage() {
   const cameras = useQuery(api.cameras.list);
-  const operatingStatus = useQuery(api.operatingStatus.get);
-  const conditions = useQuery(api.conditions.get);
+  const operatingStatus = useQuery(api.operatingStatus.getCurrent);
+  const conditions = useQuery(api.conditions.getCurrent);
   const lifts = useQuery(api.lifts.list);
   const newsItems = useQuery(api.news.listPublic);
 
