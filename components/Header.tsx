@@ -1,64 +1,99 @@
 "use client";
 
 import Link from "next/link";
-import { Mountain, Menu, X } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { Mountain, Camera, CloudSnow, CreditCard, Phone, Menu, X } from "lucide-react";
 import { useState } from "react";
 
 export default function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const navLinks = [
-    { href: "/", label: "Domů" },
-    { href: "/kamery", label: "Webkamery" },
-    { href: "/podminky", label: "Podmínky" },
-    { href: "/cenik", label: "Ceník" },
-    { href: "/kontakt", label: "Kontakt" },
+  const navigation = [
+    { name: "Webkamery", href: "/kamery", icon: Camera },
+    { name: "Podmínky", href: "/podminky", icon: CloudSnow },
+    { name: "Ceník", href: "/cenik", icon: CreditCard },
+    { name: "Kontakt", href: "/kontakt", icon: Phone },
   ];
 
+  const isActive = (href: string) => pathname === href;
+
   return (
-    <header className="bg-blue-600 text-white shadow-lg">
+    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b-2 border-sunset-orange/20">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between py-4">
-          <Link href="/" className="flex items-center space-x-2">
-            <Mountain className="w-8 h-8" />
-            <span className="text-2xl font-bold">Vleky Chotouň</span>
+        <div className="flex items-center justify-between h-20">
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-3 group">
+            <div className="w-12 h-12 rounded-full bg-diagonal-gradient flex items-center justify-center transform group-hover:rotate-12 transition-transform">
+              <Mountain className="w-7 h-7 text-white" />
+            </div>
+            <div>
+              <div className="font-display text-2xl leading-none text-alpine-blue">
+                Vleky Chotouň
+              </div>
+              <div className="font-mono text-xs text-sunset-orange uppercase tracking-wider">
+                Rodinný areál
+              </div>
+            </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-6">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="hover:text-blue-200 transition-colors"
-              >
-                {link.label}
-              </Link>
-            ))}
+          <nav className="hidden md:flex items-center gap-1">
+            {navigation.map((item) => {
+              const Icon = item.icon;
+              const active = isActive(item.href);
+              
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={`flex items-center gap-2 px-5 py-2.5 rounded-lg font-body font-semibold transition-all ${
+                    active
+                      ? "bg-diagonal-gradient text-white shadow-lg"
+                      : "text-mountain-night hover:bg-sunset-orange/10 hover:text-sunset-orange"
+                  }`}
+                >
+                  <Icon className="w-4 h-4" />
+                  {item.name}
+                </Link>
+              );
+            })}
           </nav>
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden w-10 h-10 rounded-lg bg-sunset-orange/10 flex items-center justify-center text-sunset-orange hover:bg-sunset-orange hover:text-white transition-colors"
           >
-            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
 
         {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <nav className="md:hidden pb-4">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="block py-2 hover:text-blue-200 transition-colors"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                {link.label}
-              </Link>
-            ))}
+        {mobileMenuOpen && (
+          <nav className="md:hidden py-4 border-t border-sunset-orange/20">
+            <div className="space-y-2">
+              {navigation.map((item) => {
+                const Icon = item.icon;
+                const active = isActive(item.href);
+                
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-lg font-body font-semibold transition-all ${
+                      active
+                        ? "bg-diagonal-gradient text-white"
+                        : "text-mountain-night hover:bg-sunset-orange/10"
+                    }`}
+                  >
+                    <Icon className="w-5 h-5" />
+                    {item.name}
+                  </Link>
+                );
+              })}
+            </div>
           </nav>
         )}
       </div>

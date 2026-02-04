@@ -1,89 +1,96 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Camera, RefreshCcw } from "lucide-react";
+import { useState } from "react";
+import { RefreshCw } from "lucide-react";
 
 interface LiveCameraProps {
-  camera: {
-    _id: string;
-    name: string;
-    description?: string;
-    imageUrl: string;
-  };
+  name: string;
+  imageUrl: string;
+  description?: string;
+  timestamp?: number;
+  onRefresh?: () => void;
 }
 
-export default function LiveCamera({ camera }: LiveCameraProps) {
-  const [imageUrl, setImageUrl] = useState(camera.imageUrl);
-  const [lastUpdate, setLastUpdate] = useState(new Date());
-  const [isLoading, setIsLoading] = useState(false);
+export default function LiveCamera({ 
+  name, 
+  imageUrl, 
+  description, 
+  timestamp,
+  onRefresh 
+}: LiveCameraProps) {
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
-  // Auto-refresh every 30 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      refreshImage();
-    }, 30000);
-
-    return () => clearInterval(interval);
-  }, [camera.imageUrl]);
-
-  const refreshImage = () => {
-    setIsLoading(true);
-    // Add timestamp to force refresh
-    const timestamp = new Date().getTime();
-    setImageUrl(`${camera.imageUrl}?t=${timestamp}`);
-    setLastUpdate(new Date());
-    
-    // Reset loading state after a brief moment
-    setTimeout(() => setIsLoading(false), 500);
+  const handleRefresh = () => {
+    if (onRefresh) {
+      setIsRefreshing(true);
+      onRefresh();
+      setTimeout(() => setIsRefreshing(false), 1000);
+    }
   };
 
+  const imageUrlWithTimestamp = `${imageUrl}?t=${timestamp || Date.now()}`;
+
   return (
-    <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-      <div className="relative aspect-video bg-gray-200">
-        {isLoading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 z-10">
-            <RefreshCcw className="w-8 h-8 text-white animate-spin" />
+    <div className="group relative bg-white rounded-2xl overflow-hidden shadow-xl lift-on-hover">
+      {/* Live Badge */}
+      <div className="absolute top-4 right-4 z-20">
+        <span className="inline-flex items-center gap-2 bg-red-500 text-white px-4 py-2 rounded-full font-mono text-xs uppercase tracking-wider shadow-lg pulse-live">
+          <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+          ŽIVĚ
+        </span>
+      </div>
+
+      {/* Refresh Button */}
+      <button
+        onClick={handleRefresh}
+        disabled={isRefreshing}
+        className="absolute top-4 left-4 z-20 w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-alpine-blue hover:bg-white hover:scale-110 transition-all shadow-lg disabled:opacity-50"
+        title="Obnovit obrázek"
+      >
+        <RefreshCw className={`w-5 h-5 ${isRefreshing ? 'animate-spin' : ''}`} />
+      </button>
+
+      {/* Camera Image */}
+      <div className="relative aspect-video bg-gradient-to-br from-alpine-blue/5 to-sunset-orange/5">
+        {!imageError ? (
+          <img
+            src={imageUrlWithTimestamp}
+            alt={name}
+            className="w-full h-full object-cover"
+            onError={() => setImageError(true)}
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-alpine-blue/10 to-sunset-orange/10">
+            <div className="text-center">
+              <div className="w-20 h-20 rounded-full bg-mountain-night/5 flex items-center justify-center mx-auto mb-4">
+                <RefreshCw className="w-10 h-10 text-mountain-night/30" />
+              </div>
+              <p className="font-mono text-sm text-mountain-night/50">
+                Kamera není dostupná
+              </p>
+            </div>
           </div>
         )}
-        <img
-          src={imageUrl}
-          alt={camera.name}
-          className="w-full h-full object-cover"
-          onError={(e) => {
-            // Fallback if image fails to load
-            const target = e.target as HTMLImageElement;
-            target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect fill='%23ddd' width='400' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='20' fill='%23666'%3EKamera není dostupná%3C/text%3E%3C/svg%3E";
-          }}
-        />
-        
-        {/* Live Badge */}
-        <div className="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1 animate-pulse">
-          <div className="w-2 h-2 bg-white rounded-full"></div>
-          LIVE
-        </div>
-        
-        {/* Refresh Button */}
-        <button
-          onClick={refreshImage}
-          className="absolute top-4 right-4 bg-white bg-opacity-90 hover:bg-opacity-100 p-2 rounded-full shadow-lg transition-all"
-          title="Obnovit obrázek"
-        >
-          <RefreshCcw className="w-5 h-5 text-gray-700" />
-        </button>
+
+        {/* Gradient Overlay for Text */}
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
       </div>
-      
-      <div className="p-4">
-        <div className="flex items-center gap-2 mb-2">
-          <Camera className="w-5 h-5 text-blue-600" />
-          <h3 className="font-bold text-lg">{camera.name}</h3>
-        </div>
-        {camera.description && (
-          <p className="text-gray-600 text-sm mb-2">{camera.description}</p>
+
+      {/* Info Overlay */}
+      <div className="absolute bottom-0 left-0 right-0 p-6">
+        <h3 className="font-display text-3xl text-white mb-1">{name}</h3>
+        {description && (
+          <p className="text-snow-cream/90 mb-2">{description}</p>
         )}
-        <div className="text-xs text-gray-500">
-          Poslední aktualizace: {lastUpdate.toLocaleTimeString("cs-CZ")}
-        </div>
+        <p className="font-mono text-xs text-snow-cream/70">
+          Aktualizováno: {new Date().toLocaleTimeString('cs-CZ')}
+        </p>
       </div>
+
+      {/* Decorative Corner Accent */}
+      <div className="absolute top-0 left-0 w-24 h-24 bg-diagonal-gradient opacity-10 blur-2xl"></div>
+      <div className="absolute bottom-0 right-0 w-32 h-32 bg-alpine-blue/20 opacity-10 blur-3xl"></div>
     </div>
   );
 }
