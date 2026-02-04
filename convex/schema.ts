@@ -6,7 +6,8 @@ export default defineSchema({
   cameras: defineTable({
     name: v.string(),
     description: v.optional(v.string()),
-    imageUrl: v.string(),
+    imageUrl: v.string(), // URL for static image or iframe embed
+    type: v.optional(v.union(v.literal("image"), v.literal("iframe"))), // defaults to "image" for backward compatibility
     order: v.number(),
     isActive: v.boolean(),
   }),

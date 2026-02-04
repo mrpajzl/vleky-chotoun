@@ -94,6 +94,7 @@ export default function KameryPage() {
                   name={camera.name}
                   imageUrl={camera.imageUrl}
                   description={camera.description}
+                  type={camera.type || "image"}
                   timestamp={imageTimestamps[camera._id]}
                   onRefresh={() => handleRefreshCamera(camera._id)}
                 />
