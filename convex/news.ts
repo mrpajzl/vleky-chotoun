@@ -6,14 +6,24 @@ export const list = query({
     return await ctx.db
       .query("news")
       .filter((q) => q.eq(q.field("isActive"), true))
-      .order("desc")
+      .order("desc", "createdAt")
+      .collect();
+  },
+});
+
+export const listPublic = query({
+  handler: async (ctx) => {
+    return await ctx.db
+      .query("news")
+      .filter((q) => q.eq(q.field("isActive"), true))
+      .order("desc", "createdAt")
       .collect();
   },
 });
 
 export const listAll = query({
   handler: async (ctx) => {
-    return await ctx.db.query("news").order("desc").collect();
+    return await ctx.db.query("news").order("desc", "createdAt").collect();
   },
 });
 

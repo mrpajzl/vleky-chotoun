@@ -6,14 +6,14 @@ export const list = query({
     return await ctx.db
       .query("cameras")
       .filter((q) => q.eq(q.field("isActive"), true))
-      .order("asc")
+      .order("asc", "order")
       .collect();
   },
 });
 
 export const listAll = query({
   handler: async (ctx) => {
-    return await ctx.db.query("cameras").order("asc").collect();
+    return await ctx.db.query("cameras").order("asc", "order").collect();
   },
 });
 
