@@ -1,6 +1,5 @@
-import type { Config } from "tailwindcss";
-
-const config: Config = {
+/** @type {import('tailwindcss').Config} */
+module.exports = {
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -21,16 +20,36 @@ const config: Config = {
         mono: ['"JetBrains Mono"', 'monospace'],
       },
       backgroundImage: {
-        'diagonal-gradient': 'linear-gradient(135deg, hsl(18, 57%, 60%), hsl(45, 100%, 62%))',
-        'alpine-gradient': 'linear-gradient(180deg, hsl(204, 48%, 24%) 0%, hsl(232, 20%, 23%) 100%)',
+        'diagonal-gradient': 'linear-gradient(135deg, #FF6B35, #FFD23F)',
+        'alpine-gradient': 'linear-gradient(180deg, #1B4965 0%, #2D3047 100%)',
       },
       animation: {
         'fade-in-up': 'fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards',
         'pulse-live': 'pulse-live 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       },
+      keyframes: {
+        fadeInUp: {
+          from: {
+            opacity: '0',
+            transform: 'translateY(30px)',
+          },
+          to: {
+            opacity: '1',
+            transform: 'translateY(0)',
+          },
+        },
+        'pulse-live': {
+          '0%, 100%': {
+            opacity: '1',
+            transform: 'scale(1)',
+          },
+          '50%': {
+            opacity: '0.7',
+            transform: 'scale(1.05)',
+          },
+        },
+      },
     },
   },
   plugins: [],
 };
-
-export default config;
