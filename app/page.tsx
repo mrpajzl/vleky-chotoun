@@ -6,8 +6,10 @@ import Link from "next/link";
 import WeatherWidget from "@/components/WeatherWidget";
 import { Mountain, Camera, Snowflake, Clock, TrendingUp, ArrowRight } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useLanguage, getLocalizedField } from "@/contexts/LanguageContext";
 
 export default function HomePage() {
+  const { locale, t } = useLanguage();
   const cameras = useQuery(api.cameras.list);
   const operatingStatus = useQuery(api.operatingStatus.getCurrent);
   const conditions = useQuery(api.conditions.getCurrent);
@@ -50,18 +52,18 @@ export default function HomePage() {
                 <div className="inline-flex items-center gap-3 bg-golden-hour/20 backdrop-blur-sm border-2 border-golden-hour/50 rounded-full px-6 py-3">
                   <div className={`w-3 h-3 rounded-full ${isOperating ? 'bg-golden-hour' : 'bg-gray-400'} pulse-live`}></div>
                   <span className="font-mono text-sm uppercase tracking-wider">
-                    {isOperating ? 'Areál v provozu' : 'Areál uzavřen'}
+                    {isOperating ? t('common.open') : t('common.closed')}
                   </span>
                 </div>
               </div>
 
               <h1 className="font-display text-6xl md:text-8xl leading-none">
-                Vleky<br/>
-                <span className="text-golden-hour">Chotouň</span>
+                {t('home.title').split(' ')[0]}<br/>
+                <span className="text-golden-hour">{t('home.title').split(' ')[1]}</span>
               </h1>
 
               <p className="text-xl md:text-2xl font-body text-snow-cream/90 max-w-md">
-                Rodinný lyžařský areál v srdci hor. Sledujte podmínky v reálném čase.
+                {t('home.hero')}
               </p>
 
               {conditions && (
@@ -69,7 +71,7 @@ export default function HomePage() {
                   <div className="flex items-center gap-2">
                     <Snowflake className="w-6 h-6 text-golden-hour" />
                     <div>
-                      <div className="font-mono text-sm opacity-75">Sníh</div>
+                      <div className="font-mono text-sm opacity-75">{t('home.snow')}</div>
                       <div className="font-display text-2xl">{conditions.snowDepth}</div>
                     </div>
                   </div>
@@ -77,7 +79,7 @@ export default function HomePage() {
                   <div className="flex items-center gap-2">
                     <TrendingUp className="w-6 h-6 text-golden-hour" />
                     <div>
-                      <div className="font-mono text-sm opacity-75">Podmínky</div>
+                      <div className="font-mono text-sm opacity-75">{t('home.conditions')}</div>
                       <div className="font-display text-2xl capitalize">{conditions.quality}</div>
                     </div>
                   </div>
@@ -89,7 +91,7 @@ export default function HomePage() {
                 className="inline-flex items-center gap-3 bg-sunset-orange hover:bg-sunset-orange/90 text-white px-8 py-4 rounded-lg font-display text-xl tracking-wide transition-all lift-on-hover group"
               >
                 <Camera className="w-6 h-6" />
-                Živé kamery
+                {t('cameras.title')}
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
@@ -102,21 +104,21 @@ export default function HomePage() {
                   <div className="absolute top-4 right-4 z-10">
                     <span className="inline-flex items-center gap-2 bg-red-500 text-white px-4 py-2 rounded-full font-mono text-xs uppercase tracking-wider pulse-live">
                       <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
-                      ŽIVĚ
+                      {locale === 'cs' ? 'ŽIVĚ' : 'LIVE'}
                     </span>
                   </div>
                   <img
                     src={`${cameras[0].imageUrl}?t=${imageTimestamps[cameras[0]._id] || Date.now()}`}
-                    alt={cameras[0].name}
+                    alt={getLocalizedField(cameras[0], 'name', locale)}
                     className="w-full aspect-video object-cover"
                     onError={(e) => {
                       e.currentTarget.src = "https://via.placeholder.com/800x600?text=Camera+Offline";
                     }}
                   />
                   <div className="p-4 bg-gradient-to-t from-black/60 to-transparent absolute bottom-0 left-0 right-0">
-                    <h3 className="font-display text-2xl mb-1">{cameras[0].name}</h3>
+                    <h3 className="font-display text-2xl mb-1">{getLocalizedField(cameras[0], 'name', locale)}</h3>
                     <p className="font-mono text-xs opacity-75">
-                      Aktualizováno: {new Date().toLocaleTimeString('cs-CZ')}
+                      {locale === 'cs' ? 'Aktualizováno' : 'Updated'}: {new Date().toLocaleTimeString(locale === 'cs' ? 'cs-CZ' : 'en-US')}
                     </p>
                   </div>
                 </div>
@@ -138,13 +140,13 @@ export default function HomePage() {
               <div className="w-12 h-12 rounded-full bg-sunset-orange/10 flex items-center justify-center">
                 <Clock className="w-6 h-6 text-sunset-orange" />
               </div>
-              <h3 className="font-display text-2xl">Provozní doba</h3>
+              <h3 className="font-display text-2xl">{t('common.hours')}</h3>
             </div>
             <p className="font-mono text-3xl text-mountain-night mb-2">
               {operatingStatus?.openingHours || '9-21'}
             </p>
             <p className="text-mountain-night/60">
-              {isOperating ? 'Dnes otevřeno' : 'Dnes zavřeno'}
+              {isOperating ? (locale === 'cs' ? 'Dnes otevřeno' : 'Open today') : (locale === 'cs' ? 'Dnes zavřeno' : 'Closed today')}
             </p>
           </div>
 
@@ -154,7 +156,7 @@ export default function HomePage() {
               <div className="w-12 h-12 rounded-full bg-alpine-blue/10 flex items-center justify-center">
                 <Mountain className="w-6 h-6 text-alpine-blue" />
               </div>
-              <h3 className="font-display text-2xl">Vleky v provozu</h3>
+              <h3 className="font-display text-2xl">{t('conditions.liftsStatus')}</h3>
             </div>
             <p className="font-mono text-3xl text-mountain-night mb-2">
               {operatingLifts.length}/{lifts?.length || 0}
@@ -163,7 +165,7 @@ export default function HomePage() {
               {operatingLifts.slice(0, 2).map((lift) => (
                 <div key={lift._id} className="flex items-center gap-2 text-sm">
                   <div className="w-2 h-2 rounded-full bg-golden-hour"></div>
-                  <span>{lift.name}</span>
+                  <span>{getLocalizedField(lift, 'name', locale)}</span>
                 </div>
               ))}
             </div>
@@ -176,7 +178,7 @@ export default function HomePage() {
                 <div className="w-12 h-12 rounded-full bg-golden-hour/10 flex items-center justify-center">
                   <Snowflake className="w-6 h-6 text-golden-hour" />
                 </div>
-                <h3 className="font-display text-2xl">Sněhové podmínky</h3>
+                <h3 className="font-display text-2xl">{t('conditions.snowConditions')}</h3>
               </div>
               <p className="font-mono text-3xl text-mountain-night mb-2">
                 {conditions.snowDepth}
@@ -193,7 +195,7 @@ export default function HomePage() {
       {topNews.length > 0 && (
         <section className="container mx-auto px-4 py-20">
           <h2 className="font-display text-5xl md:text-6xl mb-12 text-center">
-            Aktuality
+            {t('news.title')}
           </h2>
           <div className="grid md:grid-cols-2 gap-8">
             {topNews.map((item, idx) => (
@@ -205,15 +207,15 @@ export default function HomePage() {
                 <div className="p-8">
                   {item.isImportant && (
                     <span className="inline-block bg-sunset-orange text-white px-3 py-1 rounded-full text-xs font-mono uppercase tracking-wider mb-4">
-                      Důležité
+                      {locale === 'cs' ? 'Důležité' : 'Important'}
                     </span>
                   )}
-                  <h3 className="font-display text-3xl mb-4">{item.title}</h3>
+                  <h3 className="font-display text-3xl mb-4">{getLocalizedField(item, 'title', locale)}</h3>
                   <p className="text-mountain-night/80 text-lg leading-relaxed mb-4">
-                    {item.content}
+                    {getLocalizedField(item, 'content', locale)}
                   </p>
                   <p className="font-mono text-sm text-mountain-night/50">
-                    {new Date(item.createdAt).toLocaleDateString('cs-CZ')}
+                    {new Date(item.createdAt).toLocaleDateString(locale === 'cs' ? 'cs-CZ' : 'en-US')}
                   </p>
                 </div>
               </article>
@@ -229,24 +231,24 @@ export default function HomePage() {
         
         <div className="container mx-auto px-4 relative z-10 text-center">
           <h2 className="font-display text-5xl md:text-7xl mb-6">
-            Připraveni na sjezdovku?
+            {t('home.ctaTitle')}
           </h2>
           <p className="text-xl md:text-2xl mb-10 text-snow-cream/90 max-w-2xl mx-auto">
-            Zkontrolujte aktuální podmínky a připravte se na perfektní den na sněhu.
+            {t('home.ctaSubtitle')}
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
             <Link 
               href="/podminky" 
               className="inline-flex items-center gap-2 bg-white text-alpine-blue hover:bg-snow-cream px-8 py-4 rounded-lg font-display text-xl tracking-wide transition-all lift-on-hover"
             >
-              Zobrazit podmínky
+              {t('home.showConditions')}
               <ArrowRight className="w-5 h-5" />
             </Link>
             <Link 
               href="/cenik" 
               className="inline-flex items-center gap-2 bg-sunset-orange hover:bg-sunset-orange/90 text-white px-8 py-4 rounded-lg font-display text-xl tracking-wide transition-all lift-on-hover"
             >
-              Ceník
+              {t('home.showPricing')}
               <ArrowRight className="w-5 h-5" />
             </Link>
           </div>
