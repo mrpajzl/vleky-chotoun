@@ -31,6 +31,13 @@ export default function AdminDashboard() {
       color: "bg-green-500",
     },
     {
+      title: "Správa vleků",
+      description: "Přidat, upravit nebo odstranit vleky",
+      icon: <Cable className="w-12 h-12" />,
+      href: "/admin/lifts",
+      color: "bg-emerald-500",
+    },
+    {
       title: "Sněhové podmínky",
       description: "Upravit informace o sněhu a počasí",
       icon: <CloudSnow className="w-12 h-12" />,

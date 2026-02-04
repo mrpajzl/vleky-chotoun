@@ -19,6 +19,28 @@ export const update = mutation({
   },
 });
 
+export const updateFull = mutation({
+  args: {
+    id: v.id("lifts"),
+    name: v.string(),
+    isOperating: v.boolean(),
+    order: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const { id, ...updates } = args;
+    await ctx.db.patch(id, updates);
+  },
+});
+
+export const remove = mutation({
+  args: {
+    id: v.id("lifts"),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.delete(args.id);
+  },
+});
+
 export const create = mutation({
   args: {
     name: v.string(),
