@@ -15,8 +15,10 @@ export default function AdminCamerasPage() {
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
-    name: "",
-    description: "",
+    name_cs: "",
+    name_en: "",
+    description_cs: "",
+    description_en: "",
     imageUrl: "",
     type: "image" as "image" | "iframe",
     order: 1,
@@ -33,8 +35,10 @@ export default function AdminCamerasPage() {
   const handleEdit = (camera: any) => {
     setEditingId(camera._id);
     setFormData({
-      name: camera.name,
-      description: camera.description || "",
+      name_cs: camera.name_cs || camera.name || "",
+      name_en: camera.name_en || camera.name || "",
+      description_cs: camera.description_cs || camera.description || "",
+      description_en: camera.description_en || camera.description || "",
       imageUrl: camera.imageUrl,
       type: camera.type || "image",
       order: camera.order,
@@ -53,7 +57,7 @@ export default function AdminCamerasPage() {
       await createCamera(formData);
       setIsAdding(false);
     }
-    setFormData({ name: "", description: "", imageUrl: "", type: "image", order: 1, isActive: true });
+    setFormData({ name_cs: "", name_en: "", description_cs: "", description_en: "", imageUrl: "", type: "image", order: 1, isActive: true });
   };
 
   const handleDelete = async (id: string) => {
@@ -65,7 +69,7 @@ export default function AdminCamerasPage() {
   const handleCancel = () => {
     setEditingId(null);
     setIsAdding(false);
-    setFormData({ name: "", description: "", imageUrl: "", type: "image", order: 1, isActive: true });
+    setFormData({ name_cs: "", name_en: "", description_cs: "", description_en: "", imageUrl: "", type: "image", order: 1, isActive: true });
   };
 
   return (
@@ -90,13 +94,23 @@ export default function AdminCamerasPage() {
           <h3 className="text-xl font-bold mb-4">Nová kamera</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-2">Název *</label>
+              <label className="block text-sm font-medium mb-2">Název (čeština) *</label>
               <input
                 type="text"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                value={formData.name_cs}
+                onChange={(e) => setFormData({ ...formData, name_cs: e.target.value })}
                 className="w-full px-3 py-2 border rounded-lg"
                 placeholder="např. Kamera 1"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Name (English) *</label>
+              <input
+                type="text"
+                value={formData.name_en}
+                onChange={(e) => setFormData({ ...formData, name_en: e.target.value })}
+                className="w-full px-3 py-2 border rounded-lg"
+                placeholder="e.g. Camera 1"
               />
             </div>
             <div>
@@ -127,14 +141,24 @@ export default function AdminCamerasPage() {
                 </p>
               )}
             </div>
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium mb-2">Popis</label>
+            <div>
+              <label className="block text-sm font-medium mb-2">Popis (čeština)</label>
               <input
                 type="text"
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                value={formData.description_cs}
+                onChange={(e) => setFormData({ ...formData, description_cs: e.target.value })}
                 className="w-full px-3 py-2 border rounded-lg"
                 placeholder="Krátký popis kamery"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Description (English)</label>
+              <input
+                type="text"
+                value={formData.description_en}
+                onChange={(e) => setFormData({ ...formData, description_en: e.target.value })}
+                className="w-full px-3 py-2 border rounded-lg"
+                placeholder="Short camera description"
               />
             </div>
             <div>
@@ -184,11 +208,20 @@ export default function AdminCamerasPage() {
                 <h3 className="text-xl font-bold mb-4">Upravit kameru</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Název *</label>
+                    <label className="block text-sm font-medium mb-2">Název (čeština) *</label>
                     <input
                       type="text"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      value={formData.name_cs}
+                      onChange={(e) => setFormData({ ...formData, name_cs: e.target.value })}
+                      className="w-full px-3 py-2 border rounded-lg"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Name (English) *</label>
+                    <input
+                      type="text"
+                      value={formData.name_en}
+                      onChange={(e) => setFormData({ ...formData, name_en: e.target.value })}
                       className="w-full px-3 py-2 border rounded-lg"
                     />
                   </div>
@@ -219,12 +252,21 @@ export default function AdminCamerasPage() {
                       </p>
                     )}
                   </div>
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium mb-2">Popis</label>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Popis (čeština)</label>
                     <input
                       type="text"
-                      value={formData.description}
-                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                      value={formData.description_cs}
+                      onChange={(e) => setFormData({ ...formData, description_cs: e.target.value })}
+                      className="w-full px-3 py-2 border rounded-lg"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Description (English)</label>
+                    <input
+                      type="text"
+                      value={formData.description_en}
+                      onChange={(e) => setFormData({ ...formData, description_en: e.target.value })}
                       className="w-full px-3 py-2 border rounded-lg"
                     />
                   </div>
@@ -288,7 +330,7 @@ export default function AdminCamerasPage() {
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
                         <Camera className="w-6 h-6 text-blue-600" />
-                        <h3 className="text-xl font-bold">{camera.name}</h3>
+                        <h3 className="text-xl font-bold">{camera.name_cs || camera.name}</h3>
                         {camera.type === "iframe" && (
                           <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs font-semibold">
                             Živé video
@@ -304,8 +346,11 @@ export default function AdminCamerasPage() {
                           </span>
                         )}
                       </div>
-                      {camera.description && (
-                        <p className="text-gray-600 mb-2">{camera.description}</p>
+                      {(camera.description_cs || camera.description) && (
+                        <div className="mb-2">
+                          <p className="text-gray-600"><span className="font-semibold">CS:</span> {camera.description_cs || camera.description}</p>
+                          {camera.description_en && <p className="text-gray-600"><span className="font-semibold">EN:</span> {camera.description_en}</p>}
+                        </div>
                       )}
                       <p className="text-sm text-gray-500">Pořadí: {camera.order}</p>
                       <p className="text-sm text-gray-500">Typ: {camera.type === "iframe" ? "Živé video (iframe)" : "Statický obrázek"}</p>
