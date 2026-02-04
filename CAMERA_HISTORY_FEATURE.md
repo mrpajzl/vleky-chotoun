@@ -12,8 +12,9 @@ Added a video-like camera history viewer that plays through 216 historical image
 - **Play/Pause** - Start/stop automatic playback
 - **Timeline Scrubber** - Drag to any point in history
 - **Skip Controls** - Jump forward/back by 10 frames
-- **Speed Control** - 0.5x, 1x, 2x, 4x playback speeds
+- **Speed Control** - 0.5x, 1x (default), 2x, 4x playback speeds
 - **Reset** - Jump back to start
+- **Smooth Transitions** - Images preloaded before display to prevent flickering
 
 ### Visual Feedback
 - **LIVE Indicator** - Shows when viewing latest frame
@@ -120,7 +121,7 @@ Examples:
 
 ### Assumptions
 - **216 images** total per camera
-- Images are **~5 minutes apart** (18 hours of history)
+- Images are **10 minutes apart** (~36 hours of history)
 - Frame 216 is the **latest/live** image
 - Frame 0 is the **oldest** image
 
@@ -233,15 +234,37 @@ Type: image
 ## 🎉 Result
 
 Users can now:
-- ✅ Watch weather changes over 18 hours
+- ✅ Watch weather changes over ~36 hours
 - ✅ See snow accumulation timeline
-- ✅ Check conditions from earlier today
+- ✅ Check conditions from earlier today or yesterday
 - ✅ Review slope traffic patterns
 - ✅ Jump to any moment in history
-- ✅ Play it like a video
+- ✅ Play it like a video with smooth transitions
 
 **Perfect for checking "How was it 3 hours ago?" 🎿**
 
 ---
 
-Built on 2026-02-04 | Camera History Viewer v1.0
+## ⚡ Performance Improvements (v1.1)
+
+### Preloading System
+- Images are **preloaded before display** to prevent flickering
+- Smooth transitions between frames
+- Loading indicator shows during image fetch
+- Controls disabled while loading to prevent race conditions
+
+### Optimized Playback
+- **Slower default speed** (400ms per frame) for better viewing
+- Speed options: 0.5x (800ms), 1x (400ms), 2x (200ms), 4x (100ms)
+- Automatic pause when reaching end of timeline
+- Error handling with graceful fallback
+
+### User Experience
+- Visual loading indicator overlay
+- Disabled controls during loading
+- Time labels reflect 10-minute intervals
+- Accurate history duration display (~36 hours)
+
+---
+
+Built on 2026-02-04 | Camera History Viewer v1.1
