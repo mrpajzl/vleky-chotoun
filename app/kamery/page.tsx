@@ -5,8 +5,10 @@ import { api } from "@/convex/_generated/api";
 import LiveCamera from "@/components/LiveCamera";
 import { Camera, Eye } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useLanguage, getLocalizedField } from "@/contexts/LanguageContext";
 
 export default function KameryPage() {
+  const { locale, t } = useLanguage();
   const cameras = useQuery(api.cameras.list);
   const [imageTimestamps, setImageTimestamps] = useState<Record<string, number>>({});
 
@@ -39,28 +41,28 @@ export default function KameryPage() {
             <div className="inline-flex items-center gap-3 bg-golden-hour/20 backdrop-blur-sm border-2 border-golden-hour/50 rounded-full px-6 py-3 mb-8">
               <div className="w-3 h-3 rounded-full bg-golden-hour pulse-live"></div>
               <span className="font-mono text-sm uppercase tracking-wider">
-                {activeCameras.length} živých kamer
+                {activeCameras.length} {t('cameras.liveCams')}
               </span>
             </div>
 
             <h1 className="font-display text-6xl md:text-8xl mb-6">
-              Živé<br/>
-              <span className="text-golden-hour">Webkamery</span>
+              {t('cameras.title').split(' ').map((word, i) => (
+                i === 0 ? <span key={i}>{word}<br/></span> : <span key={i} className="text-golden-hour">{word}</span>
+              ))}
             </h1>
 
             <p className="text-xl md:text-2xl text-snow-cream/90 mb-8">
-              Sledujte aktuální podmínky v reálném čase. Kamery se automaticky 
-              obnovují každých 30 sekund.
+              {t('cameras.subtitle')}
             </p>
 
             <div className="flex items-center justify-center gap-6 text-snow-cream/80">
               <div className="flex items-center gap-2">
                 <Camera className="w-5 h-5 text-golden-hour" />
-                <span className="font-mono text-sm">Auto-refresh</span>
+                <span className="font-mono text-sm">{t('cameras.autoRefresh')}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Eye className="w-5 h-5 text-golden-hour" />
-                <span className="font-mono text-sm">HD kvalita</span>
+                <span className="font-mono text-sm">{t('cameras.hdQuality')}</span>
               </div>
             </div>
           </div>
@@ -77,10 +79,10 @@ export default function KameryPage() {
               <Camera className="w-12 h-12 text-mountain-night/30" />
             </div>
             <h3 className="font-display text-3xl text-mountain-night mb-3">
-              Žádné kamery k dispozici
+              {t('cameras.noCameras')}
             </h3>
             <p className="text-mountain-night/60">
-              Momentálně nejsou dostupné žádné živé kamery.
+              {t('cameras.noCamerasDesc')}
             </p>
           </div>
         ) : (
@@ -91,9 +93,9 @@ export default function KameryPage() {
                 className={`opacity-0 animate-fade-in-up stagger-${Math.min(idx + 1, 6)}`}
               >
                 <LiveCamera
-                  name={camera.name}
+                  name={getLocalizedField(camera, 'name', locale)}
                   imageUrl={camera.imageUrl}
-                  description={camera.description}
+                  description={getLocalizedField(camera, 'description', locale)}
                   type={camera.type || "image"}
                   timestamp={imageTimestamps[camera._id]}
                   onRefresh={() => handleRefreshCamera(camera._id)}
