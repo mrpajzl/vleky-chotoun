@@ -21,6 +21,8 @@ export default function AdminCamerasPage() {
     description_en: "",
     imageUrl: "",
     type: "image" as "image" | "iframe",
+    cameraName: "",
+    historyCount: 216,
     order: 1,
     isActive: true,
   });
@@ -41,6 +43,8 @@ export default function AdminCamerasPage() {
       description_en: camera.description_en || camera.description || "",
       imageUrl: camera.imageUrl,
       type: camera.type || "image",
+      cameraName: camera.cameraName || "",
+      historyCount: camera.historyCount || 216,
       order: camera.order,
       isActive: camera.isActive,
     });
@@ -57,7 +61,7 @@ export default function AdminCamerasPage() {
       await createCamera(formData);
       setIsAdding(false);
     }
-    setFormData({ name_cs: "", name_en: "", description_cs: "", description_en: "", imageUrl: "", type: "image", order: 1, isActive: true });
+    setFormData({ name_cs: "", name_en: "", description_cs: "", description_en: "", imageUrl: "", type: "image", cameraName: "", historyCount: 216, order: 1, isActive: true });
   };
 
   const handleDelete = async (id: string) => {
@@ -69,7 +73,7 @@ export default function AdminCamerasPage() {
   const handleCancel = () => {
     setEditingId(null);
     setIsAdding(false);
-    setFormData({ name_cs: "", name_en: "", description_cs: "", description_en: "", imageUrl: "", type: "image", order: 1, isActive: true });
+    setFormData({ name_cs: "", name_en: "", description_cs: "", description_en: "", imageUrl: "", type: "image", cameraName: "", historyCount: 216, order: 1, isActive: true });
   };
 
   return (
@@ -160,6 +164,37 @@ export default function AdminCamerasPage() {
                 className="w-full px-3 py-2 border rounded-lg"
                 placeholder="Short camera description"
               />
+            </div>
+            <div className="md:col-span-2 bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+              <h4 className="font-semibold mb-3 text-blue-900">📹 Camera History Settings (Optional)</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Camera Name (for history)</label>
+                  <input
+                    type="text"
+                    value={formData.cameraName}
+                    onChange={(e) => setFormData({ ...formData, cameraName: e.target.value })}
+                    className="w-full px-3 py-2 border rounded-lg"
+                    placeholder="e.g. w1, w2, w3"
+                  />
+                  <p className="text-xs text-gray-600 mt-1">
+                    Used for history URLs: {formData.cameraName ? `https://www.vlekychotoun.cz/camera/${formData.cameraName}-0.jpg` : 'e.g. w1-0.jpg'}
+                  </p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">History Image Count</label>
+                  <input
+                    type="number"
+                    value={formData.historyCount}
+                    onChange={(e) => setFormData({ ...formData, historyCount: parseInt(e.target.value) || 216 })}
+                    className="w-full px-3 py-2 border rounded-lg"
+                    placeholder="216"
+                  />
+                  <p className="text-xs text-gray-600 mt-1">
+                    Number of historical images (0-{formData.historyCount || 216})
+                  </p>
+                </div>
+              </div>
             </div>
             <div>
               <label className="block text-sm font-medium mb-2">Pořadí</label>
@@ -269,6 +304,37 @@ export default function AdminCamerasPage() {
                       onChange={(e) => setFormData({ ...formData, description_en: e.target.value })}
                       className="w-full px-3 py-2 border rounded-lg"
                     />
+                  </div>
+                  <div className="md:col-span-2 bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+                    <h4 className="font-semibold mb-3 text-blue-900">📹 Camera History Settings (Optional)</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium mb-2">Camera Name (for history)</label>
+                        <input
+                          type="text"
+                          value={formData.cameraName}
+                          onChange={(e) => setFormData({ ...formData, cameraName: e.target.value })}
+                          className="w-full px-3 py-2 border rounded-lg"
+                          placeholder="e.g. w1, w2, w3"
+                        />
+                        <p className="text-xs text-gray-600 mt-1">
+                          Used for history URLs: {formData.cameraName ? `https://www.vlekychotoun.cz/camera/${formData.cameraName}-0.jpg` : 'e.g. w1-0.jpg'}
+                        </p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-2">History Image Count</label>
+                        <input
+                          type="number"
+                          value={formData.historyCount}
+                          onChange={(e) => setFormData({ ...formData, historyCount: parseInt(e.target.value) || 216 })}
+                          className="w-full px-3 py-2 border rounded-lg"
+                          placeholder="216"
+                        />
+                        <p className="text-xs text-gray-600 mt-1">
+                          Number of historical images (0-{formData.historyCount || 216})
+                        </p>
+                      </div>
+                    </div>
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-2">Pořadí</label>

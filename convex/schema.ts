@@ -10,6 +10,8 @@ export default defineSchema({
     description_en: v.optional(v.string()),
     imageUrl: v.string(), // URL for static image or iframe embed
     type: v.optional(v.union(v.literal("image"), v.literal("iframe"))), // defaults to "image" for backward compatibility
+    cameraName: v.optional(v.string()), // e.g. "w1", "w2", "w3" for history URLs
+    historyCount: v.optional(v.number()), // Number of historical images (default 216)
     order: v.number(),
     isActive: v.boolean(),
     // Deprecated single-language fields (kept for migration)

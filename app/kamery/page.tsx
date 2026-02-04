@@ -3,6 +3,7 @@
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import LiveCamera from "@/components/LiveCamera";
+import CameraHistoryViewer from "@/components/CameraHistoryViewer";
 import { Camera, Eye } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useLanguage, getLocalizedField } from "@/contexts/LanguageContext";
@@ -86,20 +87,29 @@ export default function KameryPage() {
             </p>
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid md:grid-cols-1 gap-8">
             {activeCameras.map((camera, idx) => (
               <div
                 key={camera._id}
                 className={`opacity-0 animate-fade-in-up stagger-${Math.min(idx + 1, 6)}`}
               >
-                <LiveCamera
-                  name={getLocalizedField(camera, 'name', locale)}
-                  imageUrl={camera.imageUrl}
-                  description={getLocalizedField(camera, 'description', locale)}
-                  type={camera.type || "image"}
-                  timestamp={imageTimestamps[camera._id]}
-                  onRefresh={() => handleRefreshCamera(camera._id)}
-                />
+                {camera.cameraName ? (
+                  <CameraHistoryViewer
+                    cameraName={camera.cameraName}
+                    historyCount={camera.historyCount || 216}
+                    name={getLocalizedField(camera, 'name', locale)}
+                    description={getLocalizedField(camera, 'description', locale)}
+                  />
+                ) : (
+                  <LiveCamera
+                    name={getLocalizedField(camera, 'name', locale)}
+                    imageUrl={camera.imageUrl}
+                    description={getLocalizedField(camera, 'description', locale)}
+                    type={camera.type || "image"}
+                    timestamp={imageTimestamps[camera._id]}
+                    onRefresh={() => handleRefreshCamera(camera._id)}
+                  />
+                )}
               </div>
             ))}
           </div>
