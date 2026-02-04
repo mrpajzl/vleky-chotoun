@@ -3,6 +3,7 @@
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import Link from "next/link";
+import WeatherWidget from "@/components/WeatherWidget";
 import { Mountain, Camera, Snowflake, Clock, TrendingUp, ArrowRight } from "lucide-react";
 import { useState, useEffect } from "react";
 
@@ -64,7 +65,7 @@ export default function HomePage() {
               </p>
 
               {conditions && (
-                <div className="flex gap-6">
+                <div className="flex gap-6 flex-wrap">
                   <div className="flex items-center gap-2">
                     <Snowflake className="w-6 h-6 text-golden-hour" />
                     <div>
@@ -72,6 +73,7 @@ export default function HomePage() {
                       <div className="font-display text-2xl">{conditions.snowDepth}</div>
                     </div>
                   </div>
+                  <WeatherWidget />
                   <div className="flex items-center gap-2">
                     <TrendingUp className="w-6 h-6 text-golden-hour" />
                     <div>

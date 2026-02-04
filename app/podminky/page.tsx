@@ -3,6 +3,7 @@
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import StatusCard from "@/components/StatusCard";
+import WeatherForecast from "@/components/WeatherForecast";
 import { Clock, Mountain, Snowflake, ThermometerSnowflake } from "lucide-react";
 import { format } from "date-fns";
 import { cs } from "date-fns/locale";
@@ -37,6 +38,11 @@ export default function PodminkyPage() {
           </div>
         </div>
       )}
+
+      {/* Live Weather Forecast */}
+      <section className="mb-12 max-w-5xl mx-auto">
+        <WeatherForecast />
+      </section>
 
       {/* Weather Conditions */}
       <section className="mb-12">
