@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 import { Thermometer, CloudSnow, Wind } from "lucide-react";
 
 interface WeatherData {
@@ -15,13 +17,15 @@ interface WeatherData {
 }
 
 export default function WeatherForecast() {
+  const location = useQuery(api.settings.getLocation);
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Chotouň coordinates
-    const lat = 49.90122;
-    const lon = 14.51319;
+    if (!location) return;
+
+    const lat = location.lat;
+    const lon = location.lon;
 
     // Using Open-Meteo (free, no API key required)
     const fetchWeather = async () => {
@@ -69,7 +73,7 @@ export default function WeatherForecast() {
     // Refresh every 15 minutes
     const interval = setInterval(fetchWeather, 15 * 60 * 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [location]);
 
   const getWeatherDescription = (code: number): string => {
     if (code === 0) return "Jasno";

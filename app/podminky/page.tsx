@@ -47,7 +47,7 @@ export default function PodminkyPage() {
       {/* Weather Conditions */}
       <section className="mb-12">
         <h2 className="text-3xl font-bold mb-6 text-center">Sněhové podmínky</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
           {conditions && (
             <>
               <StatusCard
@@ -68,14 +68,6 @@ export default function PodminkyPage() {
                 value={conditions.quality}
                 color="green"
               />
-              {conditions.temperature && (
-                <StatusCard
-                  icon={<ThermometerSnowflake className="w-10 h-10" />}
-                  title="Teplota"
-                  value={conditions.temperature}
-                  color="cyan"
-                />
-              )}
             </>
           )}
         </div>

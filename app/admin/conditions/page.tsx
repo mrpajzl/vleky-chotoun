@@ -14,7 +14,6 @@ export default function AdminConditionsPage() {
   const [snowDepth, setSnowDepth] = useState("");
   const [snowType, setSnowType] = useState("");
   const [quality, setQuality] = useState("");
-  const [temperature, setTemperature] = useState("");
 
   useEffect(() => {
     if (typeof window !== "undefined" && !sessionStorage.getItem("adminAuth")) {
@@ -27,7 +26,6 @@ export default function AdminConditionsPage() {
       setSnowDepth(conditions.snowDepth);
       setSnowType(conditions.snowType);
       setQuality(conditions.quality);
-      setTemperature(conditions.temperature || "");
     }
   }, [conditions]);
 
@@ -36,7 +34,6 @@ export default function AdminConditionsPage() {
       snowDepth,
       snowType,
       quality,
-      temperature: temperature || undefined,
     });
     alert("Sněhové podmínky byly úspěšně aktualizovány!");
   };
@@ -91,24 +88,12 @@ export default function AdminConditionsPage() {
             </select>
             <p className="text-sm text-gray-500 mt-1">Celkové hodnocení podmínek</p>
           </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2">Teplota (volitelné)</label>
-            <input
-              type="text"
-              value={temperature}
-              onChange={(e) => setTemperature(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg"
-              placeholder="např. -5°C"
-            />
-            <p className="text-sm text-gray-500 mt-1">Aktuální teplota</p>
-          </div>
         </div>
 
         {/* Preview */}
         <div className="mt-8 p-6 bg-gray-50 rounded-lg">
           <h3 className="font-bold mb-4">Náhled:</h3>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-blue-100 p-4 rounded-lg">
               <p className="text-sm text-gray-600 mb-1">Výška sněhu</p>
               <p className="text-xl font-bold text-blue-800">{snowDepth || "-"}</p>
@@ -121,12 +106,6 @@ export default function AdminConditionsPage() {
               <p className="text-sm text-gray-600 mb-1">Podmínky</p>
               <p className="text-xl font-bold text-green-800">{quality || "-"}</p>
             </div>
-            {temperature && (
-              <div className="bg-cyan-100 p-4 rounded-lg">
-                <p className="text-sm text-gray-600 mb-1">Teplota</p>
-                <p className="text-xl font-bold text-cyan-800">{temperature}</p>
-              </div>
-            )}
           </div>
         </div>
 

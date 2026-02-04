@@ -32,7 +32,6 @@ export default defineSchema({
     snowDepth: v.string(),
     snowType: v.string(),
     quality: v.string(),
-    temperature: v.optional(v.string()),
     lastUpdated: v.number(),
     updatedBy: v.optional(v.string()),
   }),

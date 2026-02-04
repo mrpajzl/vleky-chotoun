@@ -22,7 +22,6 @@ export const update = mutation({
     snowDepth: v.string(),
     snowType: v.string(),
     quality: v.string(),
-    temperature: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const existing = await ctx.db.query("conditions").first();
