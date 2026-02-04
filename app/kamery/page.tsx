@@ -66,7 +66,7 @@ export default function KameryPage() {
           </div>
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 h-24 bg-snow-cream transform origin-bottom-left -skew-y-2"></div>
+        <div className="absolute bottom-0 left-0 right-0 h-24 bg-snow-cream/20 transform origin-bottom-left -skew-y-2"></div>
       </section>
 
       {/* Cameras Grid */}

@@ -126,7 +126,7 @@ export default function HomePage() {
         </div>
 
         {/* Diagonal divider */}
-        <div className="absolute bottom-0 left-0 right-0 h-24 bg-snow-cream transform origin-bottom-left -skew-y-2"></div>
+        <div className="absolute bottom-0 left-0 right-0 h-24 bg-snow-cream/20 transform origin-bottom-left -skew-y-2"></div>
       </section>
 
       {/* Operating Status Cards - Overlapping Layout */}
@@ -224,8 +224,8 @@ export default function HomePage() {
 
       {/* CTA Section - Bold Diagonal */}
       <section className="relative bg-alpine-gradient text-white py-20 mt-20 overflow-hidden">
-        <div className="absolute top-0 left-0 right-0 h-24 bg-snow-cream transform origin-top-left skew-y-2"></div>
-        <div className="absolute inset-0 bg-gradient-to-br from-sunset-orange/30 via-transparent to-transparent"></div>
+        <div className="absolute top-0 left-0 right-0 h-24 bg-snow-cream/20 transform origin-top-left skew-y-2"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-sunset-orange/20 via-transparent to-transparent"></div>
         
         <div className="container mx-auto px-4 relative z-10 text-center">
           <h2 className="font-display text-5xl md:text-7xl mb-6">
@@ -252,7 +252,7 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 h-24 bg-snow-cream transform origin-bottom-left -skew-y-2"></div>
+        <div className="absolute bottom-0 left-0 right-0 h-24 bg-snow-cream/20 transform origin-bottom-left -skew-y-2"></div>
       </section>
     </div>
   );
