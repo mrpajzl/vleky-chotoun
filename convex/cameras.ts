@@ -3,17 +3,18 @@ import { v } from "convex/values";
 
 export const list = query({
   handler: async (ctx) => {
-    return await ctx.db
+    const cameras = await ctx.db
       .query("cameras")
       .filter((q) => q.eq(q.field("isActive"), true))
-      .order("asc", "order")
       .collect();
+    return cameras.sort((a, b) => a.order - b.order);
   },
 });
 
 export const listAll = query({
   handler: async (ctx) => {
-    return await ctx.db.query("cameras").order("asc", "order").collect();
+    const cameras = await ctx.db.query("cameras").collect();
+    return cameras.sort((a, b) => a.order - b.order);
   },
 });
 

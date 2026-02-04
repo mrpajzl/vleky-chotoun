@@ -3,15 +3,17 @@ import { v } from "convex/values";
 
 export const getCurrent = query({
   handler: async (ctx) => {
-    const status = await ctx.db.query("operatingStatus").order("desc", "lastUpdated").first();
-    return status;
+    const all = await ctx.db.query("operatingStatus").collect();
+    if (all.length === 0) return null;
+    return all.sort((a, b) => b.lastUpdated - a.lastUpdated)[0];
   },
 });
 
 export const get = query({
   handler: async (ctx) => {
-    const status = await ctx.db.query("operatingStatus").order("desc", "lastUpdated").first();
-    return status;
+    const all = await ctx.db.query("operatingStatus").collect();
+    if (all.length === 0) return null;
+    return all.sort((a, b) => b.lastUpdated - a.lastUpdated)[0];
   },
 });
 

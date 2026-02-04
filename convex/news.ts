@@ -3,27 +3,28 @@ import { v } from "convex/values";
 
 export const list = query({
   handler: async (ctx) => {
-    return await ctx.db
+    const news = await ctx.db
       .query("news")
       .filter((q) => q.eq(q.field("isActive"), true))
-      .order("desc", "createdAt")
       .collect();
+    return news.sort((a, b) => b.createdAt - a.createdAt);
   },
 });
 
 export const listPublic = query({
   handler: async (ctx) => {
-    return await ctx.db
+    const news = await ctx.db
       .query("news")
       .filter((q) => q.eq(q.field("isActive"), true))
-      .order("desc", "createdAt")
       .collect();
+    return news.sort((a, b) => b.createdAt - a.createdAt);
   },
 });
 
 export const listAll = query({
   handler: async (ctx) => {
-    return await ctx.db.query("news").order("desc", "createdAt").collect();
+    const news = await ctx.db.query("news").collect();
+    return news.sort((a, b) => b.createdAt - a.createdAt);
   },
 });
 
