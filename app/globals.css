@@ -7,30 +7,25 @@
 @layer base {
   :root {
     /* Alpine Sunset Lodge Palette */
-    --sunset-orange: 18 57% 60%;
-    --alpine-blue: 204 48% 24%;
-    --golden-hour: 45 100% 62%;
-    --snow-cream: 40 33% 96%;
-    --mountain-night: 232 20% 23%;
+    --sunset-orange: #FF6B35;
+    --alpine-blue: #1B4965;
+    --golden-hour: #FFD23F;
+    --snow-cream: #F7F4ED;
+    --mountain-night: #2D3047;
     
     --background: var(--snow-cream);
     --foreground: var(--mountain-night);
-    --primary: var(--sunset-orange);
-    --primary-foreground: 0 0% 100%;
-    --secondary: var(--alpine-blue);
-    --secondary-foreground: 0 0% 100%;
-    --accent: var(--golden-hour);
-    --accent-foreground: var(--mountain-night);
   }
 }
 
 @layer base {
   * {
-    @apply border-mountain-night/10;
+    border-color: rgba(45, 48, 71, 0.1);
   }
   
   body {
-    @apply bg-snow-cream text-mountain-night;
+    background-color: #F7F4ED;
+    color: #2D3047;
     font-family: 'Crimson Pro', serif;
     position: relative;
   }
@@ -91,7 +86,7 @@
     left: -2rem;
     width: 4px;
     height: 100%;
-    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+    background: linear-gradient(135deg, #FF6B35, #FFD23F);
     transform: skewX(-15deg);
   }
   
@@ -151,14 +146,14 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: hsl(var(--snow-cream));
+  background: #F7F4ED;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--primary));
+  background: #FF6B35;
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--secondary));
+  background: #1B4965;
 }

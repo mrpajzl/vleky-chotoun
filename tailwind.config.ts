@@ -9,11 +9,11 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        'sunset-orange': 'hsl(18, 57%, 60%)',
-        'alpine-blue': 'hsl(204, 48%, 24%)',
-        'golden-hour': 'hsl(45, 100%, 62%)',
-        'snow-cream': 'hsl(40, 33%, 96%)',
-        'mountain-night': 'hsl(232, 20%, 23%)',
+        'sunset-orange': '#FF6B35',
+        'alpine-blue': '#1B4965',
+        'golden-hour': '#FFD23F',
+        'snow-cream': '#F7F4ED',
+        'mountain-night': '#2D3047',
       },
       fontFamily: {
         display: ['"Bebas Neue"', 'sans-serif'],
