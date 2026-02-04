@@ -11,6 +11,7 @@
 import type * as cameras from "../cameras.js";
 import type * as conditions from "../conditions.js";
 import type * as lifts from "../lifts.js";
+import type * as migrate_bilingual from "../migrate_bilingual.js";
 import type * as news from "../news.js";
 import type * as operatingStatus from "../operatingStatus.js";
 import type * as pricing from "../pricing.js";
@@ -26,6 +27,7 @@ declare const fullApi: ApiFromModules<{
   cameras: typeof cameras;
   conditions: typeof conditions;
   lifts: typeof lifts;
+  migrate_bilingual: typeof migrate_bilingual;
   news: typeof news;
   operatingStatus: typeof operatingStatus;
   pricing: typeof pricing;
