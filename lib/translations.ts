@@ -66,6 +66,12 @@ export const translations = {
     'pricing.regular': 'Běžná cena',
     'pricing.reduced': 'Zvýhodněná cena',
     
+    // News
+    'news.title': 'Aktuality',
+    'news.description': 'Novinky a oznámení',
+    'news.noNews': 'Žádné aktuality',
+    'news.readMore': 'Číst více',
+    
     // Rental
     'rental.title': 'Půjčovna Vybavení',
     'rental.subtitle': 'Zapůjčení lyžařského i snowboardového vybavení',
@@ -161,6 +167,12 @@ export const translations = {
     'pricing.kids': 'Kids Tickets',
     'pricing.regular': 'Regular Price',
     'pricing.reduced': 'Reduced Price',
+    
+    // News
+    'news.title': 'News',
+    'news.description': 'Latest news and announcements',
+    'news.noNews': 'No news available',
+    'news.readMore': 'Read more',
     
     // Rental
     'rental.title': 'Equipment Rental',
