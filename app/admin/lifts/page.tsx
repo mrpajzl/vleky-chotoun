@@ -15,7 +15,8 @@ export default function AdminLiftsPage() {
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
-    name: "",
+    name_cs: "",
+    name_en: "",
     isOperating: true,
     order: 1,
   });
@@ -30,7 +31,8 @@ export default function AdminLiftsPage() {
   const handleEdit = (lift: any) => {
     setEditingId(lift._id);
     setFormData({
-      name: lift.name,
+      name_cs: lift.name_cs || lift.name || "",
+      name_en: lift.name_en || lift.name || "",
       isOperating: lift.isOperating,
       order: lift.order,
     });
@@ -48,7 +50,7 @@ export default function AdminLiftsPage() {
         await createLift(formData);
         setIsAdding(false);
       }
-      setFormData({ name: "", isOperating: true, order: 1 });
+      setFormData({ name_cs: "", name_en: "", isOperating: true, order: 1 });
       alert("Vlek byl úspěšně uložen!");
     } catch (error) {
       alert("Chyba při ukládání vleku: " + error);
@@ -64,7 +66,7 @@ export default function AdminLiftsPage() {
   const handleCancel = () => {
     setEditingId(null);
     setIsAdding(false);
-    setFormData({ name: "", isOperating: true, order: 1 });
+    setFormData({ name_cs: "", name_en: "", isOperating: true, order: 1 });
   };
 
   return (
@@ -89,13 +91,23 @@ export default function AdminLiftsPage() {
           <h3 className="text-xl font-bold mb-4">Nový vlek</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-2">Název vleku *</label>
+              <label className="block text-sm font-medium mb-2">Název vleku (čeština) *</label>
               <input
                 type="text"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                value={formData.name_cs}
+                onChange={(e) => setFormData({ ...formData, name_cs: e.target.value })}
                 className="w-full px-3 py-2 border rounded-lg"
                 placeholder="např. Poma 1"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Lift name (English) *</label>
+              <input
+                type="text"
+                value={formData.name_en}
+                onChange={(e) => setFormData({ ...formData, name_en: e.target.value })}
+                className="w-full px-3 py-2 border rounded-lg"
+                placeholder="e.g. T-bar 1"
               />
             </div>
             <div>
@@ -145,11 +157,20 @@ export default function AdminLiftsPage() {
                 <h3 className="text-xl font-bold mb-4">Upravit vlek</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Název vleku *</label>
+                    <label className="block text-sm font-medium mb-2">Název vleku (čeština) *</label>
                     <input
                       type="text"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      value={formData.name_cs}
+                      onChange={(e) => setFormData({ ...formData, name_cs: e.target.value })}
+                      className="w-full px-3 py-2 border rounded-lg"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Lift name (English) *</label>
+                    <input
+                      type="text"
+                      value={formData.name_en}
+                      onChange={(e) => setFormData({ ...formData, name_en: e.target.value })}
                       className="w-full px-3 py-2 border rounded-lg"
                     />
                   </div>
@@ -195,7 +216,8 @@ export default function AdminLiftsPage() {
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
                       <Cable className="w-6 h-6 text-blue-600" />
-                      <h3 className="text-xl font-bold">{lift.name}</h3>
+                      <h3 className="text-xl font-bold">{lift.name_cs || lift.name}</h3>
+                      {lift.name_en && <span className="text-sm text-gray-500">/ {lift.name_en}</span>}
                       {lift.isOperating ? (
                         <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-semibold">
                           ✅ V provozu

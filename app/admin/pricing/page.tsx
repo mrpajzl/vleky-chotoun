@@ -16,10 +16,12 @@ export default function AdminPricingPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     category: "time",
-    name: "",
+    name_cs: "",
+    name_en: "",
     priceRegular: 0,
     priceReduced: 0,
-    description: "",
+    description_cs: "",
+    description_en: "",
     order: 1,
   });
   const [isAdding, setIsAdding] = useState(false);
@@ -34,10 +36,12 @@ export default function AdminPricingPage() {
     setEditingId(price._id);
     setFormData({
       category: price.category,
-      name: price.name,
+      name_cs: price.name_cs || price.name || "",
+      name_en: price.name_en || price.name || "",
       priceRegular: price.priceRegular,
       priceReduced: price.priceReduced || 0,
-      description: price.description || "",
+      description_cs: price.description_cs || price.description || "",
+      description_en: price.description_en || price.description || "",
       order: price.order,
     });
   };
@@ -45,10 +49,12 @@ export default function AdminPricingPage() {
   const handleSave = async () => {
     const data = {
       category: formData.category,
-      name: formData.name,
+      name_cs: formData.name_cs,
+      name_en: formData.name_en,
       priceRegular: formData.priceRegular,
       priceReduced: formData.priceReduced > 0 ? formData.priceReduced : undefined,
-      description: formData.description || undefined,
+      description_cs: formData.description_cs || undefined,
+      description_en: formData.description_en || undefined,
       order: formData.order,
     };
 
@@ -62,7 +68,7 @@ export default function AdminPricingPage() {
       await createPrice(data);
       setIsAdding(false);
     }
-    setFormData({ category: "time", name: "", priceRegular: 0, priceReduced: 0, description: "", order: 1 });
+    setFormData({ category: "time", name_cs: "", name_en: "", priceRegular: 0, priceReduced: 0, description_cs: "", description_en: "", order: 1 });
   };
 
   const handleDelete = async (id: string) => {
@@ -74,7 +80,7 @@ export default function AdminPricingPage() {
   const handleCancel = () => {
     setEditingId(null);
     setIsAdding(false);
-    setFormData({ category: "time", name: "", priceRegular: 0, priceReduced: 0, description: "", order: 1 });
+    setFormData({ category: "time", name_cs: "", name_en: "", priceRegular: 0, priceReduced: 0, description_cs: "", description_en: "", order: 1 });
   };
 
   const timeTickets = pricing?.filter((p) => p.category === "time");
@@ -114,14 +120,25 @@ export default function AdminPricingPage() {
                 <option value="kids">Dětský areál</option>
               </select>
             </div>
+            <div></div>
             <div>
-              <label className="block text-sm font-medium mb-2">Název *</label>
+              <label className="block text-sm font-medium mb-2">Název (čeština) *</label>
               <input
                 type="text"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                value={formData.name_cs}
+                onChange={(e) => setFormData({ ...formData, name_cs: e.target.value })}
                 className="w-full px-3 py-2 border rounded-lg"
                 placeholder="např. 1 hodina"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Name (English) *</label>
+              <input
+                type="text"
+                value={formData.name_en}
+                onChange={(e) => setFormData({ ...formData, name_en: e.target.value })}
+                className="w-full px-3 py-2 border rounded-lg"
+                placeholder="e.g. 1 hour"
               />
             </div>
             <div>
@@ -144,14 +161,24 @@ export default function AdminPricingPage() {
                 placeholder="150"
               />
             </div>
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium mb-2">Popis</label>
+            <div>
+              <label className="block text-sm font-medium mb-2">Popis (čeština)</label>
               <input
                 type="text"
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                value={formData.description_cs}
+                onChange={(e) => setFormData({ ...formData, description_cs: e.target.value })}
                 className="w-full px-3 py-2 border rounded-lg"
-                placeholder="Volitelný popis"
+                placeholder="Dodatečné informace"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Description (English)</label>
+              <input
+                type="text"
+                value={formData.description_en}
+                onChange={(e) => setFormData({ ...formData, description_en: e.target.value })}
+                className="w-full px-3 py-2 border rounded-lg"
+                placeholder="Additional info"
               />
             </div>
             <div>
@@ -167,8 +194,7 @@ export default function AdminPricingPage() {
           <div className="flex gap-3 mt-6">
             <button
               onClick={handleSave}
-              disabled={!formData.name || formData.priceRegular <= 0}
-              className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center gap-2"
             >
               <Save className="w-4 h-4" />
               Uložit
@@ -184,140 +210,119 @@ export default function AdminPricingPage() {
         </div>
       )}
 
-      {/* Pricing Tables */}
-      <div className="space-y-8">
+      {/* Pricing Categories */}
+      <div className="grid grid-cols-1 gap-8">
         {/* Time Tickets */}
-        <div className="bg-white rounded-lg shadow-lg p-6">
+        <div>
           <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
             <CreditCard className="w-6 h-6 text-blue-600" />
             Časové jízdenky
           </h2>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-4 py-3 text-left text-sm font-semibold">Název</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold">Plná cena</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold">Zlevněná</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold">Popis</th>
-                  <th className="px-4 py-3 text-right text-sm font-semibold">Akce</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                {timeTickets?.map((ticket) => (
-                  <tr key={ticket._id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 font-medium">{ticket.name}</td>
-                    <td className="px-4 py-3">{ticket.priceRegular} Kč</td>
-                    <td className="px-4 py-3">{ticket.priceReduced ? `${ticket.priceReduced} Kč` : "-"}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{ticket.description || "-"}</td>
-                    <td className="px-4 py-3 text-right">
-                      <button
-                        onClick={() => handleEdit(ticket)}
-                        className="text-blue-600 hover:text-blue-800 mr-3"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(ticket._id)}
-                        className="text-red-600 hover:text-red-800"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="grid grid-cols-1 gap-4">
+            {timeTickets && timeTickets.length > 0 ? (
+              timeTickets.map((price) => (
+                <PricingItem
+                  key={price._id}
+                  price={price}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                  editingId={editingId}
+                />
+              ))
+            ) : (
+              <p className="text-gray-500 italic">Žádné časové jízdenky</p>
+            )}
           </div>
         </div>
 
         {/* Point Tickets */}
-        <div className="bg-white rounded-lg shadow-lg p-6">
+        <div>
           <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-            <CreditCard className="w-6 h-6 text-green-600" />
+            <CreditCard className="w-6 h-6 text-purple-600" />
             Bodové jízdenky
           </h2>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-4 py-3 text-left text-sm font-semibold">Název</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold">Plná cena</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold">Zlevněná</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold">Popis</th>
-                  <th className="px-4 py-3 text-right text-sm font-semibold">Akce</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                {pointTickets?.map((ticket) => (
-                  <tr key={ticket._id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 font-medium">{ticket.name}</td>
-                    <td className="px-4 py-3">{ticket.priceRegular} Kč</td>
-                    <td className="px-4 py-3">{ticket.priceReduced ? `${ticket.priceReduced} Kč` : "-"}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{ticket.description || "-"}</td>
-                    <td className="px-4 py-3 text-right">
-                      <button
-                        onClick={() => handleEdit(ticket)}
-                        className="text-blue-600 hover:text-blue-800 mr-3"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(ticket._id)}
-                        className="text-red-600 hover:text-red-800"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="grid grid-cols-1 gap-4">
+            {pointTickets && pointTickets.length > 0 ? (
+              pointTickets.map((price) => (
+                <PricingItem
+                  key={price._id}
+                  price={price}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                  editingId={editingId}
+                />
+              ))
+            ) : (
+              <p className="text-gray-500 italic">Žádné bodové jízdenky</p>
+            )}
           </div>
         </div>
 
         {/* Kids Tickets */}
-        <div className="bg-white rounded-lg shadow-lg p-6">
+        <div>
           <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-            <CreditCard className="w-6 h-6 text-purple-600" />
+            <CreditCard className="w-6 h-6 text-green-600" />
             Dětský areál
           </h2>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-4 py-3 text-left text-sm font-semibold">Název</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold">Cena</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold">Popis</th>
-                  <th className="px-4 py-3 text-right text-sm font-semibold">Akce</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                {kidsTickets?.map((ticket) => (
-                  <tr key={ticket._id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 font-medium">{ticket.name}</td>
-                    <td className="px-4 py-3">{ticket.priceRegular} Kč</td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{ticket.description || "-"}</td>
-                    <td className="px-4 py-3 text-right">
-                      <button
-                        onClick={() => handleEdit(ticket)}
-                        className="text-blue-600 hover:text-blue-800 mr-3"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(ticket._id)}
-                        className="text-red-600 hover:text-red-800"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="grid grid-cols-1 gap-4">
+            {kidsTickets && kidsTickets.length > 0 ? (
+              kidsTickets.map((price) => (
+                <PricingItem
+                  key={price._id}
+                  price={price}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                  editingId={editingId}
+                />
+              ))
+            ) : (
+              <p className="text-gray-500 italic">Žádné položky dětského areálu</p>
+            )}
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function PricingItem({ price, onEdit, onDelete, editingId }: any) {
+  return (
+    <div className="bg-white rounded-lg shadow p-4 flex items-center justify-between">
+      <div className="flex-1">
+        <h3 className="text-lg font-bold">{price.name_cs || price.name}</h3>
+        {price.name_en && <p className="text-sm text-gray-500">EN: {price.name_en}</p>}
+        {(price.description_cs || price.description) && (
+          <p className="text-sm text-gray-600 mt-1">
+            <span className="font-semibold">CS:</span> {price.description_cs || price.description}
+          </p>
+        )}
+        {price.description_en && (
+          <p className="text-sm text-gray-600">
+            <span className="font-semibold">EN:</span> {price.description_en}
+          </p>
+        )}
+        <div className="flex gap-4 mt-2">
+          <span className="text-lg font-bold text-blue-600">{price.priceRegular} Kč</span>
+          {price.priceReduced && (
+            <span className="text-lg font-semibold text-green-600">{price.priceReduced} Kč (zlevněno)</span>
+          )}
+        </div>
+      </div>
+      <div className="flex gap-2">
+        <button
+          onClick={() => onEdit(price)}
+          className="bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
+          title="Upravit"
+        >
+          <Edit className="w-4 h-4" />
+        </button>
+        <button
+          onClick={() => onDelete(price._id)}
+          className="bg-red-600 text-white p-2 rounded hover:bg-red-700"
+          title="Smazat"
+        >
+          <Trash2 className="w-4 h-4" />
+        </button>
       </div>
     </div>
   );
