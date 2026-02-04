@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Play, Pause, SkipBack, SkipForward, RotateCcw } from "lucide-react";
+import { Play, Pause, SkipBack, SkipForward, RotateCcw, Maximize, Minimize } from "lucide-react";
 
 interface CameraHistoryViewerProps {
   cameraName: string; // e.g. "w1", "w2", "w3"
@@ -23,8 +23,10 @@ export default function CameraHistoryViewer({
   const [playbackSpeed, setPlaybackSpeed] = useState(400); // ms per frame (slower default)
   const [imageError, setImageError] = useState(false);
   const [isLoadingFrame, setIsLoadingFrame] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const preloadedImageRef = useRef<HTMLImageElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   // Construct image URL
   const getImageUrl = (frameNumber: number) => {
@@ -152,10 +154,41 @@ export default function CameraHistoryViewer({
     }
   };
 
+  const toggleFullscreen = () => {
+    if (!containerRef.current) return;
+
+    if (!isFullscreen) {
+      // Enter fullscreen
+      if (containerRef.current.requestFullscreen) {
+        containerRef.current.requestFullscreen();
+      }
+    } else {
+      // Exit fullscreen
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+  };
+
+  // Listen for fullscreen changes
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    };
+  }, []);
+
   return (
-    <div className="bg-white rounded-2xl overflow-hidden shadow-xl">
+    <div 
+      ref={containerRef}
+      className={`bg-white rounded-2xl overflow-hidden shadow-xl ${isFullscreen ? 'fixed inset-0 z-50 rounded-none' : ''}`}
+    >
       {/* Image Display */}
-      <div className="relative aspect-video bg-gray-900">
+      <div className={`relative bg-gray-900 ${isFullscreen ? 'h-[calc(100vh-200px)]' : 'aspect-video'}`}>
         {!imageError ? (
           <>
             <img
@@ -184,18 +217,31 @@ export default function CameraHistoryViewer({
         )}
 
         {/* Overlay Info */}
-        <div className="absolute top-4 left-4 right-4 flex justify-between items-start">
+        <div className="absolute top-4 left-4 right-4 flex justify-between items-start gap-2">
           <div className="bg-black/60 backdrop-blur-sm rounded-lg px-4 py-2">
             <h3 className="font-display text-xl text-white">{name}</h3>
             {description && (
               <p className="text-sm text-white/80">{description}</p>
             )}
           </div>
-          <div className="bg-black/60 backdrop-blur-sm rounded-lg px-4 py-2">
-            <p className="text-white font-mono text-sm">
-              Frame {currentFrame + 1}/{historyCount}
-            </p>
-            <p className="text-white/80 text-xs">{getTimeLabel(currentFrame)}</p>
+          <div className="flex gap-2">
+            <div className="bg-black/60 backdrop-blur-sm rounded-lg px-4 py-2">
+              <p className="text-white font-mono text-sm">
+                Frame {currentFrame + 1}/{historyCount}
+              </p>
+              <p className="text-white/80 text-xs">{getTimeLabel(currentFrame)}</p>
+            </div>
+            <button
+              onClick={toggleFullscreen}
+              className="bg-black/60 backdrop-blur-sm rounded-lg p-3 hover:bg-black/80 transition-colors"
+              title={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+            >
+              {isFullscreen ? (
+                <Minimize className="w-5 h-5 text-white" />
+              ) : (
+                <Maximize className="w-5 h-5 text-white" />
+              )}
+            </button>
           </div>
         </div>
 

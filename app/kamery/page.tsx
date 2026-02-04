@@ -87,7 +87,7 @@ export default function KameryPage() {
             </p>
           </div>
         ) : (
-          <div className="grid md:grid-cols-1 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {activeCameras.map((camera, idx) => (
               <div
                 key={camera._id}
