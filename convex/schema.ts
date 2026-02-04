@@ -4,8 +4,8 @@ import { v } from "convex/values";
 export default defineSchema({
   // Webcams
   cameras: defineTable({
-    name_cs: v.string(),
-    name_en: v.string(),
+    name_cs: v.optional(v.string()),
+    name_en: v.optional(v.string()),
     description_cs: v.optional(v.string()),
     description_en: v.optional(v.string()),
     imageUrl: v.string(), // URL for static image or iframe embed
@@ -27,8 +27,8 @@ export default defineSchema({
 
   // Lift status
   lifts: defineTable({
-    name_cs: v.string(),
-    name_en: v.string(),
+    name_cs: v.optional(v.string()),
+    name_en: v.optional(v.string()),
     isOperating: v.boolean(),
     order: v.number(),
     // Deprecated
@@ -48,8 +48,8 @@ export default defineSchema({
   // Pricing
   pricing: defineTable({
     category: v.string(), // "time" or "points" or "kids"
-    name_cs: v.string(),
-    name_en: v.string(),
+    name_cs: v.optional(v.string()),
+    name_en: v.optional(v.string()),
     priceRegular: v.number(),
     priceReduced: v.optional(v.number()),
     description_cs: v.optional(v.string()),
@@ -62,10 +62,10 @@ export default defineSchema({
 
   // News/Announcements
   news: defineTable({
-    title_cs: v.string(),
-    title_en: v.string(),
-    content_cs: v.string(),
-    content_en: v.string(),
+    title_cs: v.optional(v.string()),
+    title_en: v.optional(v.string()),
+    content_cs: v.optional(v.string()),
+    content_en: v.optional(v.string()),
     isImportant: v.boolean(),
     isActive: v.boolean(),
     createdAt: v.number(),

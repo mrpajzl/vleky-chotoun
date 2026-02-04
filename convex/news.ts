@@ -30,8 +30,10 @@ export const listAll = query({
 
 export const create = mutation({
   args: {
-    title: v.string(),
-    content: v.string(),
+    title_cs: v.optional(v.string()),
+    title_en: v.optional(v.string()),
+    content_cs: v.optional(v.string()),
+    content_en: v.optional(v.string()),
     isImportant: v.boolean(),
     isActive: v.boolean(),
   },
@@ -48,8 +50,10 @@ export const create = mutation({
 export const update = mutation({
   args: {
     id: v.id("news"),
-    title: v.string(),
-    content: v.string(),
+    title_cs: v.optional(v.string()),
+    title_en: v.optional(v.string()),
+    content_cs: v.optional(v.string()),
+    content_en: v.optional(v.string()),
     isImportant: v.boolean(),
     isActive: v.boolean(),
   },

@@ -14,7 +14,6 @@ import type * as lifts from "../lifts.js";
 import type * as news from "../news.js";
 import type * as operatingStatus from "../operatingStatus.js";
 import type * as pricing from "../pricing.js";
-import type * as seed from "../seed.js";
 import type * as settings from "../settings.js";
 
 import type {
@@ -30,7 +29,6 @@ declare const fullApi: ApiFromModules<{
   news: typeof news;
   operatingStatus: typeof operatingStatus;
   pricing: typeof pricing;
-  seed: typeof seed;
   settings: typeof settings;
 }>;
 

@@ -22,7 +22,8 @@ export const update = mutation({
 export const updateFull = mutation({
   args: {
     id: v.id("lifts"),
-    name: v.string(),
+    name_cs: v.optional(v.string()),
+    name_en: v.optional(v.string()),
     isOperating: v.boolean(),
     order: v.number(),
   },
@@ -43,7 +44,8 @@ export const remove = mutation({
 
 export const create = mutation({
   args: {
-    name: v.string(),
+    name_cs: v.optional(v.string()),
+    name_en: v.optional(v.string()),
     isOperating: v.boolean(),
     order: v.number(),
   },

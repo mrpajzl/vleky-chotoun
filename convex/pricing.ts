@@ -11,10 +11,12 @@ export const list = query({
 export const create = mutation({
   args: {
     category: v.string(),
-    name: v.string(),
+    name_cs: v.optional(v.string()),
+    name_en: v.optional(v.string()),
     priceRegular: v.number(),
     priceReduced: v.optional(v.number()),
-    description: v.optional(v.string()),
+    description_cs: v.optional(v.string()),
+    description_en: v.optional(v.string()),
     order: v.number(),
   },
   handler: async (ctx, args) => {
@@ -26,10 +28,12 @@ export const update = mutation({
   args: {
     id: v.id("pricing"),
     category: v.string(),
-    name: v.string(),
+    name_cs: v.optional(v.string()),
+    name_en: v.optional(v.string()),
     priceRegular: v.number(),
     priceReduced: v.optional(v.number()),
-    description: v.optional(v.string()),
+    description_cs: v.optional(v.string()),
+    description_en: v.optional(v.string()),
     order: v.number(),
   },
   handler: async (ctx, args) => {

@@ -20,8 +20,10 @@ export const listAll = query({
 
 export const create = mutation({
   args: {
-    name: v.string(),
-    description: v.optional(v.string()),
+    name_cs: v.optional(v.string()),
+    name_en: v.optional(v.string()),
+    description_cs: v.optional(v.string()),
+    description_en: v.optional(v.string()),
     imageUrl: v.string(),
     type: v.optional(v.union(v.literal("image"), v.literal("iframe"))),
     order: v.number(),
@@ -35,8 +37,10 @@ export const create = mutation({
 export const update = mutation({
   args: {
     id: v.id("cameras"),
-    name: v.string(),
-    description: v.optional(v.string()),
+    name_cs: v.optional(v.string()),
+    name_en: v.optional(v.string()),
+    description_cs: v.optional(v.string()),
+    description_en: v.optional(v.string()),
     imageUrl: v.string(),
     type: v.optional(v.union(v.literal("image"), v.literal("iframe"))),
     order: v.number(),
