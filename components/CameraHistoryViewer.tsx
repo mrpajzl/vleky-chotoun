@@ -20,27 +20,58 @@ export default function CameraHistoryViewer({
 }: CameraHistoryViewerProps) {
   const [currentFrame, setCurrentFrame] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [playbackSpeed, setPlaybackSpeed] = useState(200); // ms per frame
+  const [playbackSpeed, setPlaybackSpeed] = useState(400); // ms per frame (slower default)
   const [imageError, setImageError] = useState(false);
+  const [isLoadingFrame, setIsLoadingFrame] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const preloadedImageRef = useRef<HTMLImageElement | null>(null);
 
   // Construct image URL
   const getImageUrl = (frameNumber: number) => {
     return `${baseUrl}/${cameraName}-${frameNumber}.jpg`;
   };
 
-  // Play/Pause functionality
+  // Preload next image
+  const preloadImage = (frameNumber: number): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        preloadedImageRef.current = img;
+        resolve();
+      };
+      img.onerror = reject;
+      img.src = getImageUrl(frameNumber);
+    });
+  };
+
+  // Play/Pause functionality with preloading
   useEffect(() => {
     if (isPlaying) {
-      intervalRef.current = setInterval(() => {
-        setCurrentFrame((prev) => {
-          if (prev >= historyCount - 1) {
-            setIsPlaying(false);
-            return historyCount - 1;
-          }
-          return prev + 1;
-        });
-      }, playbackSpeed);
+      const advanceFrame = async () => {
+        const nextFrame = currentFrame + 1;
+        
+        if (nextFrame >= historyCount) {
+          setIsPlaying(false);
+          return;
+        }
+
+        setIsLoadingFrame(true);
+        
+        try {
+          // Preload next image before advancing
+          await preloadImage(nextFrame);
+          setCurrentFrame(nextFrame);
+          setImageError(false);
+        } catch (error) {
+          console.error('Failed to load image:', error);
+          setImageError(true);
+          setIsPlaying(false);
+        } finally {
+          setIsLoadingFrame(false);
+        }
+      };
+
+      intervalRef.current = setInterval(advanceFrame, playbackSpeed);
     } else {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
@@ -53,11 +84,11 @@ export default function CameraHistoryViewer({
         clearInterval(intervalRef.current);
       }
     };
-  }, [isPlaying, playbackSpeed, historyCount]);
+  }, [isPlaying, playbackSpeed, currentFrame, historyCount]);
 
-  // Calculate time label (assuming images are ~5 minutes apart going backwards)
+  // Calculate time label (images are 10 minutes apart going backwards)
   const getTimeLabel = (frame: number) => {
-    const minutesAgo = (historyCount - 1 - frame) * 5;
+    const minutesAgo = (historyCount - 1 - frame) * 10;
     if (minutesAgo < 60) {
       return `${minutesAgo} min ago`;
     }
@@ -78,18 +109,47 @@ export default function CameraHistoryViewer({
     setIsPlaying(false);
   };
 
-  const handleSkipBack = () => {
-    setCurrentFrame((prev) => Math.max(0, prev - 10));
+  const handleSkipBack = async () => {
+    const newFrame = Math.max(0, currentFrame - 10);
+    setIsLoadingFrame(true);
+    try {
+      await preloadImage(newFrame);
+      setCurrentFrame(newFrame);
+      setImageError(false);
+    } catch (error) {
+      setImageError(true);
+    } finally {
+      setIsLoadingFrame(false);
+    }
   };
 
-  const handleSkipForward = () => {
-    setCurrentFrame((prev) => Math.min(historyCount - 1, prev + 10));
+  const handleSkipForward = async () => {
+    const newFrame = Math.min(historyCount - 1, currentFrame + 10);
+    setIsLoadingFrame(true);
+    try {
+      await preloadImage(newFrame);
+      setCurrentFrame(newFrame);
+      setImageError(false);
+    } catch (error) {
+      setImageError(true);
+    } finally {
+      setIsLoadingFrame(false);
+    }
   };
 
-  const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSliderChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value);
-    setCurrentFrame(value);
     setIsPlaying(false);
+    setIsLoadingFrame(true);
+    try {
+      await preloadImage(value);
+      setCurrentFrame(value);
+      setImageError(false);
+    } catch (error) {
+      setImageError(true);
+    } finally {
+      setIsLoadingFrame(false);
+    }
   };
 
   return (
@@ -97,13 +157,23 @@ export default function CameraHistoryViewer({
       {/* Image Display */}
       <div className="relative aspect-video bg-gray-900">
         {!imageError ? (
-          <img
-            src={getImageUrl(currentFrame)}
-            alt={`${name} - Frame ${currentFrame}`}
-            className="w-full h-full object-cover"
-            onError={() => setImageError(true)}
-            key={currentFrame} // Force re-render on frame change
-          />
+          <>
+            <img
+              src={getImageUrl(currentFrame)}
+              alt={`${name} - Frame ${currentFrame}`}
+              className="w-full h-full object-cover"
+              onError={() => setImageError(true)}
+              key={currentFrame} // Force re-render on frame change
+            />
+            {isLoadingFrame && (
+              <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                <div className="bg-white/90 rounded-lg px-4 py-2 flex items-center gap-2">
+                  <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                  <span className="text-sm font-medium">Loading...</span>
+                </div>
+              </div>
+            )}
+          </>
         ) : (
           <div className="w-full h-full flex items-center justify-center text-white">
             <div className="text-center">
@@ -150,7 +220,8 @@ export default function CameraHistoryViewer({
             max={historyCount - 1}
             value={currentFrame}
             onChange={handleSliderChange}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+            disabled={isLoadingFrame}
+            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
             style={{
               background: `linear-gradient(to right, #2563eb 0%, #2563eb ${
                 (currentFrame / (historyCount - 1)) * 100
@@ -167,7 +238,8 @@ export default function CameraHistoryViewer({
         <div className="flex items-center justify-center gap-4">
           <button
             onClick={handleReset}
-            className="p-3 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+            disabled={isLoadingFrame}
+            className="p-3 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             title="Reset to start"
           >
             <RotateCcw className="w-5 h-5 text-gray-700" />
@@ -175,7 +247,8 @@ export default function CameraHistoryViewer({
 
           <button
             onClick={handleSkipBack}
-            className="p-3 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+            disabled={isLoadingFrame}
+            className="p-3 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             title="Skip back 10 frames"
           >
             <SkipBack className="w-5 h-5 text-gray-700" />
@@ -183,7 +256,8 @@ export default function CameraHistoryViewer({
 
           <button
             onClick={handlePlayPause}
-            className="p-4 rounded-full bg-blue-600 hover:bg-blue-700 transition-colors shadow-lg"
+            disabled={isLoadingFrame}
+            className="p-4 rounded-full bg-blue-600 hover:bg-blue-700 transition-colors shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
             title={isPlaying ? "Pause" : "Play"}
           >
             {isPlaying ? (
@@ -195,7 +269,8 @@ export default function CameraHistoryViewer({
 
           <button
             onClick={handleSkipForward}
-            className="p-3 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+            disabled={isLoadingFrame}
+            className="p-3 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             title="Skip forward 10 frames"
           >
             <SkipForward className="w-5 h-5 text-gray-700" />
@@ -209,10 +284,10 @@ export default function CameraHistoryViewer({
               onChange={(e) => setPlaybackSpeed(Number(e.target.value))}
               className="px-3 py-1 border rounded-lg text-sm"
             >
-              <option value={500}>0.5x</option>
-              <option value={200}>1x</option>
-              <option value={100}>2x</option>
-              <option value={50}>4x</option>
+              <option value={800}>0.5x</option>
+              <option value={400}>1x</option>
+              <option value={200}>2x</option>
+              <option value={100}>4x</option>
             </select>
           </div>
         </div>
@@ -220,8 +295,11 @@ export default function CameraHistoryViewer({
         {/* Info */}
         <div className="mt-4 text-center text-sm text-gray-600">
           <p>
-            📹 {historyCount} frames • ~18 hours of history (5 min intervals)
+            📹 {historyCount} frames • ~{Math.round((historyCount * 10) / 60)} hours of history (10 min intervals)
           </p>
+          {isLoadingFrame && (
+            <p className="text-blue-600 mt-1">Loading image...</p>
+          )}
         </div>
       </div>
     </div>
