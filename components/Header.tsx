@@ -4,18 +4,20 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Mountain, Camera, CloudSnow, CreditCard, Phone, Menu, X, Package } from "lucide-react";
 import { useState } from "react";
+import { useLanguage } from "@/contexts/LanguageContext";
 import LanguageSwitcher from "./LanguageSwitcher";
 
 export default function Header() {
   const pathname = usePathname();
+  const { t } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navigation = [
-    { name: "Webkamery", href: "/kamery", icon: Camera },
-    { name: "Podmínky", href: "/podminky", icon: CloudSnow },
-    { name: "Ceník", href: "/cenik", icon: CreditCard },
-    { name: "Půjčovna", href: "/pujcovna", icon: Package },
-    { name: "Kontakt", href: "/kontakt", icon: Phone },
+    { name: t('nav.webcams'), href: "/kamery", icon: Camera },
+    { name: t('nav.conditions'), href: "/podminky", icon: CloudSnow },
+    { name: t('nav.pricing'), href: "/cenik", icon: CreditCard },
+    { name: t('nav.rental'), href: "/pujcovna", icon: Package },
+    { name: t('nav.contact'), href: "/kontakt", icon: Phone },
   ];
 
   const isActive = (href: string) => pathname === href;

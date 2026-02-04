@@ -4,12 +4,17 @@ import { v } from "convex/values";
 export default defineSchema({
   // Webcams
   cameras: defineTable({
-    name: v.string(),
-    description: v.optional(v.string()),
+    name_cs: v.string(),
+    name_en: v.string(),
+    description_cs: v.optional(v.string()),
+    description_en: v.optional(v.string()),
     imageUrl: v.string(), // URL for static image or iframe embed
     type: v.optional(v.union(v.literal("image"), v.literal("iframe"))), // defaults to "image" for backward compatibility
     order: v.number(),
     isActive: v.boolean(),
+    // Deprecated single-language fields (kept for migration)
+    name: v.optional(v.string()),
+    description: v.optional(v.string()),
   }),
 
   // Operating status
@@ -22,9 +27,12 @@ export default defineSchema({
 
   // Lift status
   lifts: defineTable({
-    name: v.string(),
+    name_cs: v.string(),
+    name_en: v.string(),
     isOperating: v.boolean(),
     order: v.number(),
+    // Deprecated
+    name: v.optional(v.string()),
   }),
 
   // Weather & Conditions
@@ -40,21 +48,31 @@ export default defineSchema({
   // Pricing
   pricing: defineTable({
     category: v.string(), // "time" or "points" or "kids"
-    name: v.string(),
+    name_cs: v.string(),
+    name_en: v.string(),
     priceRegular: v.number(),
     priceReduced: v.optional(v.number()),
-    description: v.optional(v.string()),
+    description_cs: v.optional(v.string()),
+    description_en: v.optional(v.string()),
     order: v.number(),
+    // Deprecated
+    name: v.optional(v.string()),
+    description: v.optional(v.string()),
   }),
 
   // News/Announcements
   news: defineTable({
-    title: v.string(),
-    content: v.string(),
+    title_cs: v.string(),
+    title_en: v.string(),
+    content_cs: v.string(),
+    content_en: v.string(),
     isImportant: v.boolean(),
     isActive: v.boolean(),
     createdAt: v.number(),
     updatedAt: v.number(),
+    // Deprecated
+    title: v.optional(v.string()),
+    content: v.optional(v.string()),
   }),
 
   // Settings

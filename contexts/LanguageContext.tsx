@@ -1,55 +1,15 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { translations, TranslationKey } from '@/lib/translations';
 
-type Locale = 'cs' | 'en';
+export type Locale = 'cs' | 'en';
 
 interface LanguageContextType {
   locale: Locale;
   setLocale: (locale: Locale) => void;
-  t: (key: string) => string;
+  t: (key: TranslationKey) => string;
 }
-
-const translations = {
-  cs: {
-    // Navigation
-    'nav.webcams': 'Webkamery',
-    'nav.conditions': 'Podmínky',
-    'nav.pricing': 'Ceník',
-    'nav.rental': 'Půjčovna',
-    'nav.contact': 'Kontakt',
-    
-    // Common
-    'common.open': 'AREÁL V PROVOZU',
-    'common.closed': 'AREÁL UZAVŘEN',
-    'common.hours': 'Provozní doba',
-    'common.lastUpdate': 'Poslední aktualizace',
-    
-    // Homepage
-    'home.hero': 'Rodinný lyžařský areál',
-    'home.areaOpen': 'Areál v provozu',
-    'home.areaClosed': 'Areál uzavřen',
-  },
-  en: {
-    // Navigation
-    'nav.webcams': 'Webcams',
-    'nav.conditions': 'Conditions',
-    'nav.pricing': 'Pricing',
-    'nav.rental': 'Rental',
-    'nav.contact': 'Contact',
-    
-    // Common
-    'common.open': 'RESORT OPEN',
-    'common.closed': 'RESORT CLOSED',
-    'common.hours': 'Operating Hours',
-    'common.lastUpdate': 'Last Updated',
-    
-    // Homepage
-    'home.hero': 'Family Ski Resort',
-    'home.areaOpen': 'Resort open',
-    'home.areaClosed': 'Resort closed',
-  },
-};
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
@@ -68,8 +28,8 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('locale', newLocale);
   };
 
-  const t = (key: string): string => {
-    return translations[locale][key as keyof typeof translations['cs']] || key;
+  const t = (key: TranslationKey): string => {
+    return translations[locale][key] || key;
   };
 
   return (
@@ -77,6 +37,17 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       {children}
     </LanguageContext.Provider>
   );
+}
+
+// Helper function to get localized field from a database object
+export function getLocalizedField<T extends Record<string, any>>(
+  obj: T | null | undefined,
+  fieldName: string,
+  locale: Locale
+): string {
+  if (!obj) return '';
+  const localizedField = `${fieldName}_${locale}`;
+  return obj[localizedField] || obj[fieldName] || '';
 }
 
 export function useLanguage() {
