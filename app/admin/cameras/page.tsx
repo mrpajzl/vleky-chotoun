@@ -18,6 +18,7 @@ export default function AdminCamerasPage() {
     name: "",
     description: "",
     imageUrl: "",
+    type: "image" as "image" | "iframe",
     order: 1,
     isActive: true,
   });
@@ -35,6 +36,7 @@ export default function AdminCamerasPage() {
       name: camera.name,
       description: camera.description || "",
       imageUrl: camera.imageUrl,
+      type: camera.type || "image",
       order: camera.order,
       isActive: camera.isActive,
     });
@@ -51,7 +53,7 @@ export default function AdminCamerasPage() {
       await createCamera(formData);
       setIsAdding(false);
     }
-    setFormData({ name: "", description: "", imageUrl: "", order: 1, isActive: true });
+    setFormData({ name: "", description: "", imageUrl: "", type: "image", order: 1, isActive: true });
   };
 
   const handleDelete = async (id: string) => {
@@ -63,7 +65,7 @@ export default function AdminCamerasPage() {
   const handleCancel = () => {
     setEditingId(null);
     setIsAdding(false);
-    setFormData({ name: "", description: "", imageUrl: "", order: 1, isActive: true });
+    setFormData({ name: "", description: "", imageUrl: "", type: "image", order: 1, isActive: true });
   };
 
   return (
@@ -98,14 +100,32 @@ export default function AdminCamerasPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">URL obrázku *</label>
+              <label className="block text-sm font-medium mb-2">Typ kamery *</label>
+              <select
+                value={formData.type}
+                onChange={(e) => setFormData({ ...formData, type: e.target.value as "image" | "iframe" })}
+                className="w-full px-3 py-2 border rounded-lg"
+              >
+                <option value="image">Statický obrázek</option>
+                <option value="iframe">Živé video (iframe)</option>
+              </select>
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium mb-2">
+                {formData.type === "iframe" ? "URL iframe embedu *" : "URL obrázku *"}
+              </label>
               <input
                 type="text"
                 value={formData.imageUrl}
                 onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
                 className="w-full px-3 py-2 border rounded-lg"
-                placeholder="https://..."
+                placeholder={formData.type === "iframe" ? "https://v.angelcam.com/iframe?v=..." : "https://..."}
               />
+              {formData.type === "iframe" && (
+                <p className="text-xs text-gray-500 mt-1">
+                  Pro Angelcam použijte iframe embed URL
+                </p>
+              )}
             </div>
             <div className="md:col-span-2">
               <label className="block text-sm font-medium mb-2">Popis</label>
@@ -173,13 +193,31 @@ export default function AdminCamerasPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">URL obrázku *</label>
+                    <label className="block text-sm font-medium mb-2">Typ kamery *</label>
+                    <select
+                      value={formData.type}
+                      onChange={(e) => setFormData({ ...formData, type: e.target.value as "image" | "iframe" })}
+                      className="w-full px-3 py-2 border rounded-lg"
+                    >
+                      <option value="image">Statický obrázek</option>
+                      <option value="iframe">Živé video (iframe)</option>
+                    </select>
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium mb-2">
+                      {formData.type === "iframe" ? "URL iframe embedu *" : "URL obrázku *"}
+                    </label>
                     <input
                       type="text"
                       value={formData.imageUrl}
                       onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
                       className="w-full px-3 py-2 border rounded-lg"
                     />
+                    {formData.type === "iframe" && (
+                      <p className="text-xs text-gray-500 mt-1">
+                        Pro Angelcam použijte iframe embed URL
+                      </p>
+                    )}
                   </div>
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium mb-2">Popis</label>
@@ -229,11 +267,21 @@ export default function AdminCamerasPage() {
             ) : (
               <div className="flex flex-col md:flex-row">
                 <div className="md:w-1/3 aspect-video bg-gray-200">
-                  <img
-                    src={`${camera.imageUrl}?t=${Date.now()}`}
-                    alt={camera.name}
-                    className="w-full h-full object-cover"
-                  />
+                  {camera.type === "iframe" ? (
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50">
+                      <div className="text-center p-4">
+                        <Camera className="w-12 h-12 mx-auto mb-2 text-blue-600" />
+                        <p className="text-sm font-semibold text-gray-700">Živé video (iframe)</p>
+                        <p className="text-xs text-gray-500 mt-1">Náhled není k dispozici</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <img
+                      src={`${camera.imageUrl}?t=${Date.now()}`}
+                      alt={camera.name}
+                      className="w-full h-full object-cover"
+                    />
+                  )}
                 </div>
                 <div className="flex-1 p-6">
                   <div className="flex items-start justify-between">
@@ -241,6 +289,11 @@ export default function AdminCamerasPage() {
                       <div className="flex items-center gap-3 mb-2">
                         <Camera className="w-6 h-6 text-blue-600" />
                         <h3 className="text-xl font-bold">{camera.name}</h3>
+                        {camera.type === "iframe" && (
+                          <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs font-semibold">
+                            Živé video
+                          </span>
+                        )}
                         {camera.isActive ? (
                           <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-semibold">
                             Aktivní
@@ -255,6 +308,7 @@ export default function AdminCamerasPage() {
                         <p className="text-gray-600 mb-2">{camera.description}</p>
                       )}
                       <p className="text-sm text-gray-500">Pořadí: {camera.order}</p>
+                      <p className="text-sm text-gray-500">Typ: {camera.type === "iframe" ? "Živé video (iframe)" : "Statický obrázek"}</p>
                       <p className="text-sm text-gray-500 break-all">URL: {camera.imageUrl}</p>
                     </div>
                     <div className="flex gap-2 ml-4">
