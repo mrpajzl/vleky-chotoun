@@ -21,7 +21,6 @@ export default function CameraHistoryViewer({
   const [currentFrame, setCurrentFrame] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [playbackSpeed, setPlaybackSpeed] = useState(400); // ms per frame (slower default)
-  const [imageError, setImageError] = useState(false);
   const [isLoadingFrame, setIsLoadingFrame] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -46,11 +45,13 @@ export default function CameraHistoryViewer({
     });
   };
 
-  // Play/Pause functionality with preloading
+  // Play/Pause functionality with preloading and auto-skip on error
   useEffect(() => {
     if (isPlaying) {
       const advanceFrame = async () => {
-        const nextFrame = currentFrame + 1;
+        let nextFrame = currentFrame + 1;
+        let attempts = 0;
+        const maxAttempts = 10; // Try up to 10 frames ahead
         
         if (nextFrame >= historyCount) {
           setIsPlaying(false);
@@ -59,18 +60,30 @@ export default function CameraHistoryViewer({
 
         setIsLoadingFrame(true);
         
-        try {
-          // Preload next image before advancing
-          await preloadImage(nextFrame);
-          setCurrentFrame(nextFrame);
-          setImageError(false);
-        } catch (error) {
-          console.error('Failed to load image:', error);
-          setImageError(true);
-          setIsPlaying(false);
-        } finally {
-          setIsLoadingFrame(false);
+        // Try to load next available image, skip if missing
+        while (attempts < maxAttempts && nextFrame < historyCount) {
+          try {
+            await preloadImage(nextFrame);
+            setCurrentFrame(nextFrame);
+            break; // Successfully loaded, exit loop
+          } catch (error) {
+            console.log(`Skipping missing frame ${nextFrame}`);
+            nextFrame++; // Try next frame
+            attempts++;
+            
+            if (nextFrame >= historyCount) {
+              setIsPlaying(false);
+              break;
+            }
+          }
         }
+        
+        if (attempts >= maxAttempts) {
+          console.error('Too many missing frames, stopping playback');
+          setIsPlaying(false);
+        }
+        
+        setIsLoadingFrame(false);
       };
 
       intervalRef.current = setInterval(advanceFrame, playbackSpeed);
@@ -112,46 +125,70 @@ export default function CameraHistoryViewer({
   };
 
   const handleSkipBack = async () => {
-    const newFrame = Math.max(0, currentFrame - 10);
+    let newFrame = Math.max(0, currentFrame - 10);
     setIsLoadingFrame(true);
-    try {
-      await preloadImage(newFrame);
-      setCurrentFrame(newFrame);
-      setImageError(false);
-    } catch (error) {
-      setImageError(true);
-    } finally {
-      setIsLoadingFrame(false);
+    
+    // Try to find a valid image going backwards
+    for (let i = 0; i < 10 && newFrame >= 0; i++) {
+      try {
+        await preloadImage(newFrame);
+        setCurrentFrame(newFrame);
+        setIsLoadingFrame(false);
+        return;
+      } catch (error) {
+        console.log(`Frame ${newFrame} missing, trying previous`);
+        newFrame--;
+      }
     }
+    
+    setIsLoadingFrame(false);
   };
 
   const handleSkipForward = async () => {
-    const newFrame = Math.min(historyCount - 1, currentFrame + 10);
+    let newFrame = Math.min(historyCount - 1, currentFrame + 10);
     setIsLoadingFrame(true);
-    try {
-      await preloadImage(newFrame);
-      setCurrentFrame(newFrame);
-      setImageError(false);
-    } catch (error) {
-      setImageError(true);
-    } finally {
-      setIsLoadingFrame(false);
+    
+    // Try to find a valid image going forwards
+    for (let i = 0; i < 10 && newFrame < historyCount; i++) {
+      try {
+        await preloadImage(newFrame);
+        setCurrentFrame(newFrame);
+        setIsLoadingFrame(false);
+        return;
+      } catch (error) {
+        console.log(`Frame ${newFrame} missing, trying next`);
+        newFrame++;
+      }
     }
+    
+    setIsLoadingFrame(false);
   };
 
   const handleSliderChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(e.target.value);
+    let value = parseInt(e.target.value);
     setIsPlaying(false);
     setIsLoadingFrame(true);
-    try {
-      await preloadImage(value);
-      setCurrentFrame(value);
-      setImageError(false);
-    } catch (error) {
-      setImageError(true);
-    } finally {
-      setIsLoadingFrame(false);
+    
+    // Try to find a valid image near the selected frame
+    for (let offset = 0; offset < 10; offset++) {
+      // Try exact frame first, then nearby frames
+      const attempts = offset === 0 ? [value] : [value + offset, value - offset];
+      
+      for (const frame of attempts) {
+        if (frame < 0 || frame >= historyCount) continue;
+        
+        try {
+          await preloadImage(frame);
+          setCurrentFrame(frame);
+          setIsLoadingFrame(false);
+          return;
+        } catch (error) {
+          console.log(`Frame ${frame} missing, trying nearby`);
+        }
+      }
     }
+    
+    setIsLoadingFrame(false);
   };
 
   const toggleFullscreen = () => {
@@ -189,29 +226,21 @@ export default function CameraHistoryViewer({
     >
       {/* Image Display */}
       <div className={`relative bg-gray-900 ${isFullscreen ? 'h-[calc(100vh-200px)]' : 'aspect-video'}`}>
-        {!imageError ? (
-          <>
-            <img
-              src={getImageUrl(currentFrame)}
-              alt={`${name} - Frame ${currentFrame}`}
-              className="w-full h-full object-cover"
-              onError={() => setImageError(true)}
-              key={currentFrame} // Force re-render on frame change
-            />
-            {isLoadingFrame && (
-              <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                <div className="bg-white/90 rounded-lg px-4 py-2 flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                  <span className="text-sm font-medium">Loading...</span>
-                </div>
-              </div>
-            )}
-          </>
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-white">
-            <div className="text-center">
-              <p className="text-xl font-semibold mb-2">Camera Offline</p>
-              <p className="text-sm opacity-75">Unable to load image</p>
+        <img
+          src={getImageUrl(currentFrame)}
+          alt={`${name} - Frame ${currentFrame}`}
+          className="w-full h-full object-cover"
+          onError={(e) => {
+            // Silently handle errors - image will be skipped during playback
+            e.currentTarget.style.display = 'none';
+          }}
+          key={currentFrame} // Force re-render on frame change
+        />
+        {isLoadingFrame && (
+          <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+            <div className="bg-white/90 rounded-lg px-4 py-2 flex items-center gap-2">
+              <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+              <span className="text-sm font-medium">Loading...</span>
             </div>
           </div>
         )}
